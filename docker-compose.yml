@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres
+    # container_name: taskhub_db
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=TaskHubDB
+    ports:
+      - 5432:5432
+    volumes:
+      - taskhub_data:/var/lib/postgresql
+    networks:
+      - TaskHub-network
+
+  
+volumes:
+  taskhub_data:
+
+networks:
+  TaskHub-network:
+    driver: bridge
