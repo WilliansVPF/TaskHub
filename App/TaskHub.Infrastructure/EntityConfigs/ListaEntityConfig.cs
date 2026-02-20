@@ -27,7 +27,7 @@ public class ListaEntityConfig : IEntityTypeConfiguration<Lista>
             .HasColumnName("status")
             .IsRequired();
 
-        builder.ToTable(l => l.HasCheckConstraint("CHK_Lista_Status", "\"Status\" IN (1, 4)"));
+        builder.ToTable(l => l.HasCheckConstraint("CHK_Lista_Status", "\"status\" IN (1, 4)"));
 
         builder.Property(l => l.IdTarefa)
             .HasColumnName("idTarefa")

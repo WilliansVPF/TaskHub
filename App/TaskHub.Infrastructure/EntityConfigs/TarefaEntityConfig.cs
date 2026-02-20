@@ -33,7 +33,7 @@ public class TarefaEntityConfig : IEntityTypeConfiguration<Tarefa>
             .HasColumnName("status")
             .IsRequired();
 
-        builder.ToTable(t => t.HasCheckConstraint("CHK_Tarefa_Status", "\"Status\" IN (1, 2, 3, 4)"));
+        builder.ToTable(t => t.HasCheckConstraint("CHK_Tarefa_Status", "\"status\" IN (1, 2, 3, 4)"));
 
         builder.Property(t => t.IdUsuario)
             .HasColumnName("idUsuario")

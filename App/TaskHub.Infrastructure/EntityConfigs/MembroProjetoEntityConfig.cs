@@ -10,6 +10,10 @@ public class MembroProjetoEntityConfig : IEntityTypeConfiguration<MembroProjeto>
     {
         builder.ToTable("membros_projeto");
 
+        builder.Property(mp => mp.Id)
+            .HasColumnName("id");
+        builder.HasKey(mp => mp.Id);
+
         builder.Property(mp => mp.IdProjeto)
             .HasColumnName("idProjeto")
             .IsRequired();
@@ -22,7 +26,7 @@ public class MembroProjetoEntityConfig : IEntityTypeConfiguration<MembroProjeto>
             .HasColumnName("privilegio")
             .IsRequired();
 
-        builder.ToTable(mp => mp.HasCheckConstraint("CHK_MembroProjeto_Privilegio", "\"Privilegio\" IN (1, 2, 3)"));
+        builder.ToTable(mp => mp.HasCheckConstraint("CHK_MembroProjeto_Privilegio", "\"privilegio\" IN (1, 2, 3)"));
 
         builder.HasOne(mp => mp.Projeto)
             .WithMany(p => p.MembroProjetos)

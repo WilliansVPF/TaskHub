@@ -23,7 +23,7 @@ public class ItemListaEntityConfig : IEntityTypeConfiguration<ItemLista>
             .HasColumnName("status")
             .IsRequired();
 
-        builder.ToTable(il => il.HasCheckConstraint("CHK_ItemLista_Status", "\"Status\" IN (1, 4)"));
+        builder.ToTable(il => il.HasCheckConstraint("CHK_ItemLista_Status", "\"status\" IN (1, 4)"));
 
         builder.Property(il => il.IdLista)
             .HasColumnName("idLista")
