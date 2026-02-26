@@ -12,8 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TaskHub.Infrastructure\TaskHub.Infrastructure.csproj" />
-    <ProjectReference Include="..\TaskHub.Domain\TaskHub.Domain.csproj" />
+    <!-- <ProjectReference Include="..\TaskHub.Infrastructure\TaskHub.Infrastructure.csproj" /> -->
+    <!-- <ProjectReference Include="..\TaskHub.Domain\TaskHub.Domain.csproj" /> -->
+    <ProjectReference Include="..\TaskHub.Application\TaskHub.Application.csproj" />
   </ItemGroup>
 
 </Project>

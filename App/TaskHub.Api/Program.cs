@@ -1,4 +1,9 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
+using TaskHub.Application.DTOs.User;
+using TaskHub.Application.Mappers;
+using TaskHub.Application.Services;
+using TaskHub.Application.Validatos.User;
 using TaskHub.Domain.Entities;
 using TaskHub.Infrastructure.Contexts;
 
@@ -12,6 +17,16 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<TaskHubContext>();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<TaskHubContext>();
+
+//registra validators
+//Usuario
+builder.Services.AddScoped<IValidator<RegistrarUsuarioDTO>, RegistrarUsuarioValidator>();
+
+//registra services
+builder.Services.AddScoped<UsuarioService>();
+
+//registra Mappers
+builder.Services.AddScoped<UsuarioMapper>();
 
 var app = builder.Build();
 
