@@ -19,7 +19,14 @@ public class UsuarioController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> RegistrarUsuario(RegistrarUsuarioDTO dados)
     {
-        var user = await _usuarioService.RegistrarUsuario(dados);
+        var user = await _usuarioService.RegistrarUsuarioAsync(dados);
+        return CreatedAtAction(nameof(DetalheUsuario), new {id = user.Id}, user);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> DetalheUsuario(string id)
+    {
+        var user = await _usuarioService.DetalheUsuarioAsync(id);
         return Ok(user);
     }
 

@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using TaskHub.Application.DTOs.User;
 using TaskHub.Application.Exceptions;
 using TaskHub.Application.Mappers;
@@ -20,7 +21,7 @@ public class UsuarioService
         _usuarioMapper = usuarioMapper;
     }
 
-    public async Task<DetalheUsuarioDTO> RegistrarUsuario(RegistrarUsuarioDTO dados)
+    public async Task<DetalheUsuarioDTO> RegistrarUsuarioAsync(RegistrarUsuarioDTO dados)
     {
         _registraUsuarioValidator.ValidateAndThrow(dados);
 
@@ -33,4 +34,16 @@ public class UsuarioService
 
         return detalheUsuario;
     }
+
+    public async Task<DetalheUsuarioDTO> DetalheUsuarioAsync(string id)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+        if (user is null) throw new EntityNotFoundException("Usuário não encontrado na base de dados");
+
+        var detalheUsuario = _usuarioMapper.ApplicationUserToDetalheUsuarioDTO(user);
+
+        return detalheUsuario;
+    }
+
 }
