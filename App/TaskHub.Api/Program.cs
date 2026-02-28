@@ -21,6 +21,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFramework
 //registra validators
 //Usuario
 builder.Services.AddScoped<IValidator<RegistrarUsuarioDTO>, RegistrarUsuarioValidator>();
+builder.Services.AddScoped<IValidator<EditarUsuarioDTO>, EditarUsuarioValidator>();
 
 //registra services
 builder.Services.AddScoped<UsuarioService>();

@@ -11,14 +11,16 @@ namespace TaskHub.Application.Services;
 public class UsuarioService
 {
     private readonly IValidator<RegistrarUsuarioDTO> _registraUsuarioValidator;
+    private readonly IValidator<EditarUsuarioDTO> _editarUsuarioValidator;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly UsuarioMapper _usuarioMapper;
 
-    public UsuarioService(IValidator<RegistrarUsuarioDTO> registraUsuarioValidator, UserManager<ApplicationUser> userManager, UsuarioMapper usuarioMapper)
+    public UsuarioService(IValidator<RegistrarUsuarioDTO> registraUsuarioValidator, UserManager<ApplicationUser> userManager, UsuarioMapper usuarioMapper, IValidator<EditarUsuarioDTO> editarUsuarioValidator)
     {
         _registraUsuarioValidator = registraUsuarioValidator;
         _userManager = userManager;
         _usuarioMapper = usuarioMapper;
+        _editarUsuarioValidator = editarUsuarioValidator;
     }
 
     public async Task<DetalheUsuarioDTO> RegistrarUsuarioAsync(RegistrarUsuarioDTO dados)
@@ -40,6 +42,29 @@ public class UsuarioService
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
 
         if (user is null) throw new EntityNotFoundException("Usuário não encontrado na base de dados");
+
+        var detalheUsuario = _usuarioMapper.ApplicationUserToDetalheUsuarioDTO(user);
+
+        return detalheUsuario;
+    }
+
+    public async Task<DetalheUsuarioDTO?> EditarUsuarioAsync(EditarUsuarioDTO dados)
+    {
+        _editarUsuarioValidator.ValidateAndThrow(dados);
+
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == dados.Email && u.Id != dados.Id);
+        if (user is not null) return null;
+        user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == dados.Id);
+
+        if (user is null) throw new EntityNotFoundException("Usuário não encontrado na base de dados");
+
+        user.Nome = dados.Nome;
+        user.Sobrenome = dados.Sobrenome;
+        user.UserName = dados.UserName;
+        user.Email = dados.Email;
+
+        var identityResult = await _userManager.UpdateAsync(user);
+        if (!identityResult.Succeeded) throw new IdentityCreationException(identityResult.Errors);
 
         var detalheUsuario = _usuarioMapper.ApplicationUserToDetalheUsuarioDTO(user);
 

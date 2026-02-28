@@ -23,4 +23,11 @@ public class UsuarioMapper
 
         return user;
     }
+
+    // public ApplicationUser EditarUsuarioDTOToApplicatioUser(EditarUsuarioDTO dados)
+    // {
+    //     var user = new ApplicationUser();
+
+    //     user.Id = 
+    // }
 }

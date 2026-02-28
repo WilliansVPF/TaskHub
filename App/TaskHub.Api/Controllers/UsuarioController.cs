@@ -30,4 +30,13 @@ public class UsuarioController : ControllerBase
         return Ok(user);
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> EditarUsuario(string id, EditarUsuarioDTO dados)
+    {
+        if (id != dados.Id) return BadRequest("O ID informado na URL é diferente do ID informado no corpo da requisição");
+        var user = await _usuarioService.EditarUsuarioAsync(dados);
+        if (user is null) return BadRequest("Email já cadastrado");
+        return Ok(user);
+    }
+
 }
