@@ -41,7 +41,7 @@ public class UsuarioService
     {
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
 
-        if (user is null) throw new EntityNotFoundException("Usuário não encontrado na base de dados");
+        if (user is null) throw new ResourceNotFoundException("Usuário não encontrado na base de dados");
 
         var detalheUsuario = _usuarioMapper.ApplicationUserToDetalheUsuarioDTO(user);
 
@@ -56,7 +56,7 @@ public class UsuarioService
         if (user is not null) return null;
         user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == dados.Id);
 
-        if (user is null) throw new EntityNotFoundException("Usuário não encontrado na base de dados");
+        if (user is null) throw new ResourceNotFoundException("Usuário não encontrado na base de dados");
 
         user.Nome = dados.Nome;
         user.Sobrenome = dados.Sobrenome;

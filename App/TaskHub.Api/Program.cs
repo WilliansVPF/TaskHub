@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
+using TaskHub.Api.Middleware;
 using TaskHub.Application.DTOs.User;
 using TaskHub.Application.Mappers;
 using TaskHub.Application.Services;
@@ -43,5 +44,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.Run();
