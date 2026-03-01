@@ -35,7 +35,11 @@ public class ExceptionHandlerMiddleware
         }
         catch (ResourceNotFoundException e)
         {
-            await HandlerResourceNotFoundException(context, e);
+            await HandlerResourceNotFoundExceptionAsync(context, e);
+        }
+        catch (DataConflictException e)
+        {
+            await HandlerDataConflictExceptionAsync(context, e);
         }
     }
 
@@ -76,12 +80,28 @@ public class ExceptionHandlerMiddleware
         return context.Response.WriteAsync(JsonSerializer.Serialize(body, _jsonSerializerOption));
     }
 
-    private Task HandlerResourceNotFoundException(HttpContext context, ResourceNotFoundException e)
+    private Task HandlerResourceNotFoundExceptionAsync(HttpContext context, ResourceNotFoundException e)
     {
         var body = new ErrorResponseDTO
         {
             StatusCode = 404,
             Error = "Not Found",
+            Causa = e.GetType().Name,
+            Mensagem = e.Message,
+            TimeStamp = DateTime.Now
+        };
+
+        context.Response.StatusCode = body.StatusCode;
+        context.Response.ContentType = "application/json";
+        return context.Response.WriteAsync(JsonSerializer.Serialize(body, _jsonSerializerOption));
+    }
+
+    private Task HandlerDataConflictExceptionAsync(HttpContext context, DataConflictException e)
+    {
+        var body = new ErrorResponseDTO
+        {
+            StatusCode = 409,
+            Error = "Conflict",
             Causa = e.GetType().Name,
             Mensagem = e.Message,
             TimeStamp = DateTime.Now

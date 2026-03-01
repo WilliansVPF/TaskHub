@@ -35,7 +35,6 @@ public class UsuarioController : ControllerBase
     {
         if (id != dados.Id) return BadRequest("O ID informado na URL é diferente do ID informado no corpo da requisição");
         var user = await _usuarioService.EditarUsuarioAsync(dados);
-        if (user is null) return BadRequest("Email já cadastrado");
         return Ok(user);
     }
 

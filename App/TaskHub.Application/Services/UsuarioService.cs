@@ -27,7 +27,10 @@ public class UsuarioService
     {
         _registraUsuarioValidator.ValidateAndThrow(dados);
 
-        var user = _usuarioMapper.RegistrarUsuarioDTOToApplicationUser(dados);
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == dados.Email);
+        if (user is not null) throw new DataConflictException("E-mail já cadastrado na base de dados");
+
+        user = _usuarioMapper.RegistrarUsuarioDTOToApplicationUser(dados);
 
         var identityResult = await _userManager.CreateAsync(user, dados.Senha);
         if (!identityResult.Succeeded) throw new IdentityCreationException(identityResult.Errors);
@@ -48,12 +51,12 @@ public class UsuarioService
         return detalheUsuario;
     }
 
-    public async Task<DetalheUsuarioDTO?> EditarUsuarioAsync(EditarUsuarioDTO dados)
+    public async Task<DetalheUsuarioDTO> EditarUsuarioAsync(EditarUsuarioDTO dados)
     {
         _editarUsuarioValidator.ValidateAndThrow(dados);
 
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == dados.Email && u.Id != dados.Id);
-        if (user is not null) return null;
+        if (user is not null) throw new DataConflictException("E-mail já cadastrado na base de dados");
         user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == dados.Id);
 
         if (user is null) throw new ResourceNotFoundException("Usuário não encontrado na base de dados");
