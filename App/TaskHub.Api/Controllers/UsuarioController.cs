@@ -38,4 +38,18 @@ public class UsuarioController : ControllerBase
         return Ok(user);
     }
 
+    [HttpPatch("desabilita/{id}")]
+    public async Task<IActionResult> DesabilitaUsuario(string id)
+    {
+        await _usuarioService.DesabilitaUsuarioAsync(id);
+        return Ok(new {message = "Sua conta foi desabilitada com sucesso"});
+    }
+
+    [HttpPatch("habilita/{id}")]
+    public async Task<IActionResult> HabilitaUsuario(string id)
+    {
+        await _usuarioService.HabilitaUsuarioAsync(id);
+        return Ok(new {message = "Sua conta foi habilitada com sucesso"});
+    }
+
 }

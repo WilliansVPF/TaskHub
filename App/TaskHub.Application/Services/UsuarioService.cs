@@ -74,4 +74,26 @@ public class UsuarioService
         return detalheUsuario;
     }
 
+    public async Task DesabilitaUsuarioAsync(string id)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (user is null) throw new ResourceNotFoundException("Usuário não encontrado na base de dados");
+
+        user.Ativo = false;
+
+        var identityResult = await _userManager.UpdateAsync(user);
+        if (!identityResult.Succeeded) throw new IdentityCreationException(identityResult.Errors);
+    }
+
+    public async Task HabilitaUsuarioAsync(string id)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (user is null) throw new ResourceNotFoundException("Usuário não encontrado na base de dados");
+
+        user.Ativo = true;
+
+        var identityResult = await _userManager.UpdateAsync(user);
+        if (!identityResult.Succeeded) throw new IdentityCreationException(identityResult.Errors);
+    }
+
 }
