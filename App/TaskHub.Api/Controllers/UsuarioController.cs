@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskHub.Application.DTOs.User;
 using TaskHub.Application.Services;
 
-namespace NamespaceName;
+namespace TaskHub.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

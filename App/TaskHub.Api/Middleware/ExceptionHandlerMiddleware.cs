@@ -41,6 +41,10 @@ public class ExceptionHandlerMiddleware
         {
             await HandlerDataConflictExceptionAsync(context, e);
         }
+        catch (BadCredentialsException e)
+        {
+            await HandlerBadCredentialsException(context, e);
+        }
     }
 
     private Task HandlerValidationExceptionAsync(HttpContext context, ValidationException e)
@@ -102,6 +106,22 @@ public class ExceptionHandlerMiddleware
         {
             StatusCode = 409,
             Error = "Conflict",
+            Causa = e.GetType().Name,
+            Mensagem = e.Message,
+            TimeStamp = DateTime.Now
+        };
+
+        context.Response.StatusCode = body.StatusCode;
+        context.Response.ContentType = "application/json";
+        return context.Response.WriteAsync(JsonSerializer.Serialize(body, _jsonSerializerOption));
+    }
+
+    private Task HandlerBadCredentialsException(HttpContext context, BadCredentialsException e)
+    {
+        var body = new ErrorResponseDTO
+        {
+            StatusCode = 401,
+            Error = "Bad Credentials",
             Causa = e.GetType().Name,
             Mensagem = e.Message,
             TimeStamp = DateTime.Now

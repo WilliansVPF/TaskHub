@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using TaskHub.Api.Middleware;
+using TaskHub.Application.DTOs.Auth;
 using TaskHub.Application.DTOs.User;
 using TaskHub.Application.Mappers;
 using TaskHub.Application.Services;
+using TaskHub.Application.Validatos.Auth;
 using TaskHub.Application.Validatos.User;
 using TaskHub.Domain.Entities;
 using TaskHub.Infrastructure.Contexts;
@@ -49,8 +51,13 @@ builder.Services.AddAuthentication(x =>
 builder.Services.AddScoped<IValidator<RegistrarUsuarioDTO>, RegistrarUsuarioValidator>();
 builder.Services.AddScoped<IValidator<EditarUsuarioDTO>, EditarUsuarioValidator>();
 
+//Auth
+builder.Services.AddScoped<IValidator<LoginDTO>, LoginValidator>();
+
 //registra services
 builder.Services.AddScoped<UsuarioService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<TokenService>();
 
 //registra Mappers
 builder.Services.AddScoped<UsuarioMapper>();
