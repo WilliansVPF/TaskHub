@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskHub.Application.DTOs.User;
 using TaskHub.Application.Services;
@@ -6,6 +7,7 @@ namespace TaskHub.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class UsuarioController : ControllerBase
 {
 
@@ -17,6 +19,7 @@ public class UsuarioController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<IActionResult> RegistrarUsuario(RegistrarUsuarioDTO dados)
     {
         var user = await _usuarioService.RegistrarUsuarioAsync(dados);
