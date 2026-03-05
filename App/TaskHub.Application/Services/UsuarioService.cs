@@ -51,13 +51,13 @@ public class UsuarioService
         return detalheUsuario;
     }
 
-    public async Task<DetalheUsuarioDTO> EditarUsuarioAsync(EditarUsuarioDTO dados)
+    public async Task<DetalheUsuarioDTO> EditarUsuarioAsync(string id, EditarUsuarioDTO dados)
     {
         _editarUsuarioValidator.ValidateAndThrow(dados);
 
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == dados.Email && u.Id != dados.Id);
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == dados.Email && u.Id != id);
         if (user is not null) throw new DataConflictException("E-mail já cadastrado na base de dados");
-        user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == dados.Id);
+        user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
 
         if (user is null) throw new ResourceNotFoundException("Usuário não encontrado na base de dados");
 
