@@ -53,6 +53,7 @@ builder.Services.AddScoped<IValidator<EditarUsuarioDTO>, EditarUsuarioValidator>
 
 //Auth
 builder.Services.AddScoped<IValidator<LoginDTO>, LoginValidator>();
+builder.Services.AddScoped<IValidator<AlterarSenhaDTO>, AlterarSenhaValidator>();
 
 //registra services
 builder.Services.AddScoped<UsuarioService>();
