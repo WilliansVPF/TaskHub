@@ -44,7 +44,7 @@ public class UsuarioController : ControllerBase
         return Ok(user);
     }
 
-    [HttpPatch("desabilita")]
+    [HttpDelete]
     public async Task<IActionResult> DesabilitaUsuario()
     {
         var id = User.GetUserId();
@@ -53,7 +53,7 @@ public class UsuarioController : ControllerBase
         return Ok(new {message = "Sua conta foi desabilitada com sucesso"});
     }
 
-    [HttpPatch("habilita")]
+    [HttpPatch]
     public async Task<IActionResult> HabilitaUsuario()
     {
         var id = User.GetUserId();
