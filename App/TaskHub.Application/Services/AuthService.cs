@@ -45,6 +45,6 @@ public class AuthService
         // if (!await _userManager.CheckPasswordAsync(user,dados.SenhaAtual)) throw new BadCredentialsException("Senha atual inválida");
 
         var identityResult = await _userManager.ChangePasswordAsync(user, dados.SenhaAtual, dados.NovaSenha);
-        if (!identityResult.Succeeded) throw new IdentityCreationException(identityResult.Errors);
+        if (!identityResult.Succeeded) throw new IdentityChangePasswordException(identityResult.Errors);
     }
 }

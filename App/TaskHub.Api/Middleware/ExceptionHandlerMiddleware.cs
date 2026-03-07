@@ -45,6 +45,10 @@ public class ExceptionHandlerMiddleware
         {
             await HandlerBadCredentialsException(context, e);
         }
+        catch (IdentityChangePasswordException e)
+        {
+            await HandlerIdentityChangePasswordExceptionAsync(context, e);
+        }
     }
 
     private Task HandlerValidationExceptionAsync(HttpContext context, ValidationException e)
@@ -125,6 +129,26 @@ public class ExceptionHandlerMiddleware
             Causa = e.GetType().Name,
             Mensagem = e.Message,
             TimeStamp = DateTime.Now
+        };
+
+        context.Response.StatusCode = body.StatusCode;
+        context.Response.ContentType = "application/json";
+        return context.Response.WriteAsync(JsonSerializer.Serialize(body, _jsonSerializerOption));
+    }
+
+    private Task HandlerIdentityChangePasswordExceptionAsync(HttpContext context, IdentityChangePasswordException e)
+    {
+        var body = new ErrorResponseDTO
+        {
+          StatusCode = 400,
+          Error = "Bad Request",
+          Causa = e.GetType().Name,
+          Mensagem = e.Message,
+          TimeStamp = DateTime.Now,
+          Errors = new Dictionary<string, string[]>
+          {
+              {"Identity", e.Errors.ToArray()}
+          }  
         };
 
         context.Response.StatusCode = body.StatusCode;
