@@ -10,17 +10,13 @@ public class ResponsavelEntityConfig : IEntityTypeConfiguration<Responsavel>
     {
         builder.ToTable("responsavel");
 
-        builder.Property(r => r.Id)
-            .HasColumnName("id");
-        builder.HasKey(r => r.Id);
-
         builder.Property(r => r.IdUsuario)
-            .HasColumnName("idUsuario")
-            .IsRequired();
+            .HasColumnName("idUsuario");
+        builder.HasKey(r => r.IdUsuario);
 
         builder.Property(r => r.IdTarefa)
-            .HasColumnName("idTarefa")
-            .IsRequired();
+            .HasColumnName("idTarefa");
+        builder.HasKey(r => r.IdTarefa);
 
         builder.HasOne(r => r.Usuario)
             .WithMany(u => u.Responsaveis)

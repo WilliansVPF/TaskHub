@@ -10,17 +10,13 @@ public class MembroProjetoEntityConfig : IEntityTypeConfiguration<MembroProjeto>
     {
         builder.ToTable("membros_projeto");
 
-        builder.Property(mp => mp.Id)
-            .HasColumnName("id");
-        builder.HasKey(mp => mp.Id);
-
         builder.Property(mp => mp.IdProjeto)
-            .HasColumnName("idProjeto")
-            .IsRequired();
+            .HasColumnName("idProjeto");
+        builder.HasKey(mp => mp.IdProjeto);
 
         builder.Property(mp => mp.IdUsuario)
-            .HasColumnName("idUsuario")
-            .IsRequired();
+            .HasColumnName("idUsuario");
+        builder.HasKey(mp => mp.IdUsuario);
 
         builder.Property(mp => mp.Privilegio)
             .HasColumnName("privilegio")

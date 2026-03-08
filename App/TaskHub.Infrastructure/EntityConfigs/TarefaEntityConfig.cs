@@ -24,10 +24,14 @@ public class TarefaEntityConfig : IEntityTypeConfiguration<Tarefa>
             .HasColumnType("varchar(100)");
 
         builder.Property(t => t.DataInicio)
-            .HasColumnName("dataInicio");
+            .HasColumnName("dataInicio")
+            .HasColumnType("timestamp without time zone")
+            .IsRequired(false);
 
         builder.Property(t => t.DataFim)
-            .HasColumnName("dataFim");
+            .HasColumnName("dataFim")
+            .HasColumnType("timestamp without time zone")
+            .IsRequired(false);
 
         builder.Property(t => t.Status)
             .HasColumnName("status")
@@ -40,7 +44,8 @@ public class TarefaEntityConfig : IEntityTypeConfiguration<Tarefa>
             .IsRequired();
 
         builder.Property(t => t.IdProjeto)
-            .HasColumnName("idProjeto");
+            .HasColumnName("idProjeto")
+            .IsRequired(false);
 
         builder.HasOne(t => t.Usuario)
             .WithMany(u => u.Tarefas)

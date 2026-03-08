@@ -2,7 +2,6 @@ namespace TaskHub.Domain.Entities;
 
 public class Responsavel
 {
-    public int Id { get; set; }
     public string IdUsuario { get; set; }
     public int IdTarefa { get; set; }
 

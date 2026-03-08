@@ -4,7 +4,6 @@ namespace TaskHub.Domain.Entities;
 
 public class MembroProjeto
 {
-    public int Id { get; set; }
     public Privilegio Privilegio { get; set; }
     public int IdProjeto { get; set; }
     public string IdUsuario { get; set; }
