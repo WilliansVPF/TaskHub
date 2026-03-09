@@ -5,13 +5,18 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using TaskHub.Api.Middleware;
 using TaskHub.Application.DTOs.Auth;
+using TaskHub.Application.DTOs.Tarefa;
 using TaskHub.Application.DTOs.User;
 using TaskHub.Application.Mappers;
 using TaskHub.Application.Services;
 using TaskHub.Application.Validatos.Auth;
+using TaskHub.Application.Validatos.Tarefa;
 using TaskHub.Application.Validatos.User;
 using TaskHub.Domain.Entities;
+using TaskHub.Domain.Interfaces;
+using TaskHub.Domain.Interfaces.Repositories;
 using TaskHub.Infrastructure.Contexts;
+using TaskHub.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +47,8 @@ builder.Services.AddAuthentication(x =>
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(jwtKey),
         ValidateIssuer = false,
-        ValidateAudience = false
+        ValidateAudience = false,
+        ValidateLifetime = true,
     };
 });
 
@@ -55,13 +61,23 @@ builder.Services.AddScoped<IValidator<EditarUsuarioDTO>, EditarUsuarioValidator>
 builder.Services.AddScoped<IValidator<LoginDTO>, LoginValidator>();
 builder.Services.AddScoped<IValidator<AlterarSenhaDTO>, AlterarSenhaValidator>();
 
+//Tarefa
+builder.Services.AddScoped<IValidator<CadastrarTarefaDTO>, CadastraTarefaValidator>();
+
 //registra services
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<TarefaService>();
 
 //registra Mappers
 builder.Services.AddScoped<UsuarioMapper>();
+builder.Services.AddScoped<TarefaMapper>();
+
+//registra Repositories
+builder.Services.AddScoped<ITarefaRepository, TarefaRepository>();
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
