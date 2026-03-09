@@ -44,4 +44,17 @@ public class TarefaService
         
         return detalheTarefa;
     }
+
+    public async Task<DetalheTarefaDTO> DetalheTarefaAsync(int id, string userId)
+    {
+        var tarefa = await _tarefaRepository.GetTarefaByIdAsync(id);
+
+        if (tarefa is null) throw new ResourceNotFoundException("Tarefa não encontrada");
+
+        if (tarefa.IdUsuario != userId) throw new ResourceNotFoundException("Tarefa não encontrada");
+
+        var detalheTarefa = _tarefaMapper.TarefaToDetalheTarefaDTO(tarefa);
+
+        return detalheTarefa;
+    }
 }

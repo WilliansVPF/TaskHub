@@ -23,6 +23,14 @@ public class TarefaController : ControllerBase
     {
         var userId = User.GetUserId();
         var tarefa = await _tarefaService.CadastrarTarefa(userId, dados);
+        return CreatedAtAction(nameof(DetalheTarefa), new {id = tarefa.Id}, tarefa);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> DetalheTarefa(int id)
+    {
+        var userId = User.GetUserId();
+        var tarefa = await _tarefaService.DetalheTarefaAsync(id, userId);
         return Ok(tarefa);
     }
 }

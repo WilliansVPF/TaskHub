@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using TaskHub.Domain.Entities;
 using TaskHub.Domain.Interfaces.Repositories;
 using TaskHub.Infrastructure.Contexts;
@@ -17,5 +18,10 @@ public class TarefaRepository : ITarefaRepository
     {
         await _context.AddAsync(dados);
         return dados;
+    }
+
+    public async Task<Tarefa?> GetTarefaByIdAsync(int id)
+    {
+        return await _context.Tarefas.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id);
     }
 }
