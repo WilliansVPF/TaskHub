@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NamespaceName;
 using TaskHub.Api.Extensions;
 using TaskHub.Application.DTOs.Tarefa;
 using TaskHub.Application.Services;
@@ -33,4 +34,14 @@ public class TarefaController : ControllerBase
         var tarefa = await _tarefaService.DetalheTarefaAsync(id, userId);
         return Ok(tarefa);
     }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> EditarTarefa(int id, EditarTarefaDTO dados)
+    {
+        if (id != dados.Id) return BadRequest("O id informada na URL é diferente do id informado no corpo da requisição.");
+        var userId = User.GetUserId();
+        var tarefa = await _tarefaService.EditarTarefaAsync(userId, dados);
+        return Ok(tarefa);
+    }
+    
 }

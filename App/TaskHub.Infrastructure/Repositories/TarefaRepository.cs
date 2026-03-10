@@ -20,6 +20,12 @@ public class TarefaRepository : ITarefaRepository
         return dados;
     }
 
+    public Tarefa EditarTarefa(Tarefa dados)
+    {
+        _context.Update(dados);
+        return dados;
+    }
+
     public async Task<Tarefa?> GetTarefaByIdAsync(int id)
     {
         return await _context.Tarefas.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id);

@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using NamespaceName;
 using TaskHub.Api.Middleware;
 using TaskHub.Application.DTOs.Auth;
 using TaskHub.Application.DTOs.Tarefa;
@@ -63,6 +64,7 @@ builder.Services.AddScoped<IValidator<AlterarSenhaDTO>, AlterarSenhaValidator>()
 
 //Tarefa
 builder.Services.AddScoped<IValidator<CadastrarTarefaDTO>, CadastraTarefaValidator>();
+builder.Services.AddScoped<IValidator<EditarTarefaDTO>, EditarTarefaValidator>();
 
 //registra services
 builder.Services.AddScoped<UsuarioService>();

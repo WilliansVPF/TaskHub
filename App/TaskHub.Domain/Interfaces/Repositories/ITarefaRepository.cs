@@ -7,4 +7,6 @@ public interface ITarefaRepository
     public Task<Tarefa> CadastrarTarefaAsync(Tarefa dados);
 
     public Task<Tarefa?> GetTarefaByIdAsync(int id);
+
+    public Tarefa EditarTarefa(Tarefa dados);
 }
