@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using NamespaceName;
 using TaskHub.Api.Middleware;
 using TaskHub.Application.DTOs.Auth;
@@ -26,6 +27,22 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddSwaggerGen(option =>
+{
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "Token de autenticação."
+    });
+
+    option.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+       [new OpenApiSecuritySchemeReference("Bearer", document)] = [] 
+    });
+});
 
 builder.Services.AddDbContext<TaskHubContext>();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -87,7 +104,9 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapSwaggerUI();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    // app.MapSwaggerUI();
 }
 
 app.UseHttpsRedirection();
