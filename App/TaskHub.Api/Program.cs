@@ -2,6 +2,7 @@ using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using NamespaceName;
@@ -44,7 +45,10 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
-builder.Services.AddDbContext<TaskHubContext>();
+builder.Services.AddDbContext<TaskHubContext>(options => 
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    ));
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<TaskHubContext>()
     .AddDefaultTokenProviders();
@@ -101,13 +105,13 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+// if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
+// {
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
     // app.MapSwaggerUI();
-}
+// }
 
 app.UseHttpsRedirection();
 

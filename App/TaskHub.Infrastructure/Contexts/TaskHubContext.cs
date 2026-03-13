@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using TaskHub.Domain.Entities;
 using TaskHub.Infrastructure.EntityConfigs;
 
 namespace TaskHub.Infrastructure.Contexts;
 
 public class TaskHubContext : IdentityDbContext<ApplicationUser>
-{
+{    
+
     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
     public DbSet<ItemLista> ItemListas { get; set; }
     public DbSet<Lista> Listas { get; set; }
@@ -15,9 +17,15 @@ public class TaskHubContext : IdentityDbContext<ApplicationUser>
     public DbSet<Responsavel> Responsaveis { get; set; }
     public DbSet<Tarefa> Tarefas { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
+    // protected override void OnConfiguring(DbContextOptionsBuilder options)
+    // {
+    //     // options.UseNpgsql("Username=root;Password=root;Host=db;Port=5432;Database=TaskHubDB;Pooling=true;");
+    //     options.UseNpgsql(_config["ConnectionStrings:DefaultConnection"]!);
+    // }
+
+    public TaskHubContext(DbContextOptions<TaskHubContext> options)
+        : base(options)
     {
-        options.UseNpgsql("Username=root;Password=root;Host=localhost;Port=5432;Database=TaskHubDB;Pooling=true;");
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
