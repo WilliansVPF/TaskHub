@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres
+    image: postgres:15.17-trixie
     # container_name: taskhub_db
     environment:
       - POSTGRES_USER=root
@@ -12,10 +12,46 @@ services:
       - taskhub_data:/var/lib/postgresql
     networks:
       - TaskHub-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U root -d TaskHubDB" ]
+      interval: 5s
+      retries: 10
+      start_period: 5s
 
-  
+  migrate:
+    build:
+      context: ./App
+      target: builder # usa a stage SDK do Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy # espera o DB estar pronto
+    env_file:
+      - ./App/.env
+    command: >
+      sh -c "dotnet ef database update --project TaskHub.Infrastructure"
+    networks:
+      - TaskHub-network
+    profiles:
+      - prod
+
+  app:
+    build:
+      context: ./App
+    ports:
+      - "5000:5000"
+    networks:
+      - TaskHub-network
+    env_file:
+      - ./App/.env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully # só sobe depois que migrate rodar
+    profiles:
+      - prod
+
 volumes:
   taskhub_data:
+
 
 networks:
   TaskHub-network:
