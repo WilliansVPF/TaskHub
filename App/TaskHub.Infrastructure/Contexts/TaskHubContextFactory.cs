@@ -11,9 +11,10 @@ public class TaskHubContextFactory : IDesignTimeDbContextFactory<TaskHubContext>
     {
         var basePath = Directory.GetCurrentDirectory();
 
-        var configuration = new ConfigurationBuilder()
+        IConfigurationRoot configuration = new ConfigurationBuilder()
             .SetBasePath(Path.Combine(basePath, "../TaskHub.Api"))
             .AddJsonFile("appsettings.json")
+            .AddEnvironmentVariables()
             .Build();
 
         var optionsBuilder = new DbContextOptionsBuilder<TaskHubContext>();
