@@ -108,13 +108,13 @@ docker compose version
 Clone o repositório utilizando o Git:
 
 ```bash
-git clone https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
+git clone https://github.com/WilliansVPF/TaskHub.git
 ```
 
 Entre na pasta do projeto:
 
 ```bash
-cd SEU_REPOSITORIO
+cd TaskHub
 ```
 
 Alternativamente, você também pode baixar o projeto diretamente pelo GitHub:
