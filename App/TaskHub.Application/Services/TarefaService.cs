@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using NamespaceName;
 using TaskHub.Application.DTOs.Tarefa;
 using TaskHub.Application.Exceptions;
@@ -34,9 +35,6 @@ public class TarefaService
     {
         await _cadastraTarefaValidator.ValidateAndThrowAsync(dados);
 
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user is null) throw new ResourceNotFoundException("Usuário não encontrado");
-
         var tarefa = _tarefaMapper.CadastraTarefaDTOToTarefa(userId, dados);
 
         tarefa = await _tarefaRepository.CadastrarTarefaAsync(tarefa);
@@ -54,7 +52,7 @@ public class TarefaService
 
         if (tarefa is null) throw new ResourceNotFoundException("Tarefa não encontrada");
 
-        if (tarefa.IdUsuario != userId) throw new ResourceNotFoundException("Tarefa não encontrada");
+        if (tarefa.IdUsuario != userId) throw new ForbiddenException("Usuário sem premissão para acessar esse recurso");
 
         var detalheTarefa = _tarefaMapper.TarefaToDetalheTarefaDTO(tarefa);
 

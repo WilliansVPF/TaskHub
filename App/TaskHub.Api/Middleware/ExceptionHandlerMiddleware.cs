@@ -43,11 +43,19 @@ public class ExceptionHandlerMiddleware
         }
         catch (BadCredentialsException e)
         {
-            await HandlerBadCredentialsException(context, e);
+            await HandlerBadCredentialsExceptionAsync(context, e);
         }
         catch (IdentityChangePasswordException e)
         {
             await HandlerIdentityChangePasswordExceptionAsync(context, e);
+        }
+        catch (UnauthorizedException e)
+        {
+            await HandlerUnauthorizedExceptionAsync(context, e);
+        }
+        catch (ForbiddenException e)
+        {
+            await HandlerForbiddenExceptionAsync(context, e);
         }
     }
 
@@ -120,12 +128,12 @@ public class ExceptionHandlerMiddleware
         return context.Response.WriteAsync(JsonSerializer.Serialize(body, _jsonSerializerOption));
     }
 
-    private Task HandlerBadCredentialsException(HttpContext context, BadCredentialsException e)
+    private Task HandlerBadCredentialsExceptionAsync(HttpContext context, BadCredentialsException e)
     {
         var body = new ErrorResponseDTO
         {
             StatusCode = 401,
-            Error = "Bad Credentials",
+            Error = "Unauthorized",
             Causa = e.GetType().Name,
             Mensagem = e.Message,
             TimeStamp = DateTime.Now
@@ -149,6 +157,38 @@ public class ExceptionHandlerMiddleware
           {
               {"Identity", e.Errors.ToArray()}
           }  
+        };
+
+        context.Response.StatusCode = body.StatusCode;
+        context.Response.ContentType = "application/json";
+        return context.Response.WriteAsync(JsonSerializer.Serialize(body, _jsonSerializerOption));
+    }
+
+    private Task HandlerUnauthorizedExceptionAsync(HttpContext context, UnauthorizedException e)
+    {
+        var body = new ErrorResponseDTO
+        {
+            StatusCode = 401,
+            Error = "Unauthorized",
+            Causa = e.GetType().Name,
+            Mensagem = e.Message,
+            TimeStamp = DateTime.Now
+        };
+
+        context.Response.StatusCode = body.StatusCode;
+        context.Response.ContentType = "application.json";
+        return context.Response.WriteAsync(JsonSerializer.Serialize(body, _jsonSerializerOption));
+    }
+
+    private Task HandlerForbiddenExceptionAsync(HttpContext context, ForbiddenException e)
+    {
+        var body = new ErrorResponseDTO
+        {
+            StatusCode = 403,
+            Error = "Forbidden",
+            Causa = e.GetType().Name,
+            Mensagem = e.Message,
+            TimeStamp = DateTime.Now
         };
 
         context.Response.StatusCode = body.StatusCode;
