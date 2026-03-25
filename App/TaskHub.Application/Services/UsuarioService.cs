@@ -2,9 +2,10 @@ using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TaskHub.Application.DTOs.User;
-using TaskHub.Application.Exceptions;
 using TaskHub.Application.Mappers;
+using TaskHub.Domain.Common;
 using TaskHub.Domain.Entities;
+using TaskHub.Domain.Enums;
 
 namespace TaskHub.Application.Services;
 
@@ -23,43 +24,58 @@ public class UsuarioService
         _editarUsuarioValidator = editarUsuarioValidator;
     }
 
-    public async Task<DetalheUsuarioDTO> RegistrarUsuarioAsync(RegistrarUsuarioDTO dados)
+    public async Task<ResultData<DetalheUsuarioDTO>> RegistrarUsuarioAsync(RegistrarUsuarioDTO dados)
     {
-        _registraUsuarioValidator.ValidateAndThrow(dados);
+        var validationResult = await _registraUsuarioValidator.ValidateAsync(dados);
 
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == dados.Email);
-        if (user is not null) throw new DataConflictException("E-mail já cadastrado na base de dados");
+        if (!validationResult.IsValid)
+        {
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
+            return ResultData<DetalheUsuarioDTO>.Failure("Erro de validação", ResultStatus.BadRequest, errors);
+        }
+
+        var user = await _userManager.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == dados.Email);
+        if (user is not null) return ResultData<DetalheUsuarioDTO>.Failure("E-mail já cadastrado na base de dados", ResultStatus.Conflict);
 
         user = _usuarioMapper.RegistrarUsuarioDTOToApplicationUser(dados);
 
         var identityResult = await _userManager.CreateAsync(user, dados.Senha);
-        if (!identityResult.Succeeded) throw new IdentityCreationException(identityResult.Errors);
+        if (!identityResult.Succeeded)
+        {
+            var errors = identityResult.Errors.Select(e => e.Description);
+            return ResultData<DetalheUsuarioDTO>.Failure("Erro no registro", ResultStatus.BadRequest, errors);
+        }
 
         var detalheUsuario = _usuarioMapper.ApplicationUserToDetalheUsuarioDTO(user);
 
-        return detalheUsuario;
+        return ResultData<DetalheUsuarioDTO>.Success(detalheUsuario, ResultStatus.Created);
     }
 
-    public async Task<DetalheUsuarioDTO> DetalheUsuarioAsync(string id)
+    public async Task<ResultData<DetalheUsuarioDTO>> DetalheUsuarioAsync(string id)
     {
+        var user = await _userManager.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
+        if (user is null) return ResultData<DetalheUsuarioDTO>.Failure("Usuário não encontrado na base de dados", ResultStatus.NotFound);
+
+        var detalheUsuario = _usuarioMapper.ApplicationUserToDetalheUsuarioDTO(user);
+
+        return ResultData<DetalheUsuarioDTO>.Success(detalheUsuario, ResultStatus.Ok);
+    }
+
+    public async Task<ResultData<DetalheUsuarioDTO>> EditarUsuarioAsync(string id, EditarUsuarioDTO dados)
+    {
+        var validationResult = await _editarUsuarioValidator.ValidateAsync(dados);
+
+        if (!validationResult.IsValid)
+        {
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
+            return ResultData<DetalheUsuarioDTO>.Failure("Erro de validação", ResultStatus.BadRequest, errors);
+        }
+
+        var userExists = await _userManager.Users.AsNoTracking().AnyAsync(u => u.Email == dados.Email && u.Id != id);
+        if (userExists) return ResultData<DetalheUsuarioDTO>.Failure("E-mail já cadastrado na base de dados", ResultStatus.Conflict);
+
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
-
-        if (user is null) throw new ResourceNotFoundException("Usuário não encontrado na base de dados");
-
-        var detalheUsuario = _usuarioMapper.ApplicationUserToDetalheUsuarioDTO(user);
-
-        return detalheUsuario;
-    }
-
-    public async Task<DetalheUsuarioDTO> EditarUsuarioAsync(string id, EditarUsuarioDTO dados)
-    {
-        _editarUsuarioValidator.ValidateAndThrow(dados);
-
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == dados.Email && u.Id != id);
-        if (user is not null) throw new DataConflictException("E-mail já cadastrado na base de dados");
-        user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
-
-        if (user is null) throw new ResourceNotFoundException("Usuário não encontrado na base de dados");
+        if (user is null) return ResultData<DetalheUsuarioDTO>.Failure("Usuário não encontrado na base de dados", ResultStatus.NotFound);
 
         user.Nome = dados.Nome;
         user.Sobrenome = dados.Sobrenome;
@@ -67,33 +83,50 @@ public class UsuarioService
         user.Email = dados.Email;
 
         var identityResult = await _userManager.UpdateAsync(user);
-        if (!identityResult.Succeeded) throw new IdentityCreationException(identityResult.Errors);
+        if (!identityResult.Succeeded)
+        {
+            var erros = identityResult.Errors.Select(e => e.Description);
+            return ResultData<DetalheUsuarioDTO>.Failure("Erro ao atualizar", ResultStatus.BadRequest, erros);
+        }
 
         var detalheUsuario = _usuarioMapper.ApplicationUserToDetalheUsuarioDTO(user);
 
-        return detalheUsuario;
+        return ResultData<DetalheUsuarioDTO>.Success(detalheUsuario, ResultStatus.Ok);
     }
 
-    public async Task DesabilitaUsuarioAsync(string id)
+    public async Task<Result> DesabilitaUsuarioAsync(string id)
     {
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
-        if (user is null) throw new ResourceNotFoundException("Usuário não encontrado na base de dados");
+        if (user is null) return ResultData<DetalheUsuarioDTO>.Failure("Usuário não encontrado na base de dados", ResultStatus.NotFound);
 
         user.Ativo = false;
 
         var identityResult = await _userManager.UpdateAsync(user);
-        if (!identityResult.Succeeded) throw new IdentityCreationException(identityResult.Errors);
+        if (!identityResult.Succeeded)
+        {
+            var erros = identityResult.Errors.Select(e => e.Description);
+            return Result.Failure("Erro ao atualizar", ResultStatus.BadRequest, erros);
+        }
+
+        return Result.Success(ResultStatus.NoContent);
     }
 
-    public async Task HabilitaUsuarioAsync(string id)
+    public async Task<Result> HabilitaUsuarioAsync(string id)
     {
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
-        if (user is null) throw new ResourceNotFoundException("Usuário não encontrado na base de dados");
+        if (user is null) return ResultData<DetalheUsuarioDTO>.Failure("Usuário não encontrado na base de dados", ResultStatus.NotFound);
+
 
         user.Ativo = true;
 
         var identityResult = await _userManager.UpdateAsync(user);
-        if (!identityResult.Succeeded) throw new IdentityCreationException(identityResult.Errors);
+        if (!identityResult.Succeeded)
+        {
+            var erros = identityResult.Errors.Select(e => e.Description);
+            return Result.Failure("Erro ao atualizar", ResultStatus.BadRequest, erros);
+        }
+
+        return Result.Success(ResultStatus.NoContent);
     }
 
 }
