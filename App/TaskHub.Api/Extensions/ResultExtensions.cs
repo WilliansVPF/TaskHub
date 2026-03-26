@@ -15,6 +15,7 @@ public static class ResultExtensions
           ResultStatus.NoContent => new NoContentResult(),
           ResultStatus.NotFound => new NotFoundObjectResult(result),
           ResultStatus.Conflict => new ConflictObjectResult(result),
+          ResultStatus.Forbidden => new ForbidResult(),
           _ => new BadRequestObjectResult(result)
         };
     }

@@ -22,17 +22,19 @@ public class TarefaController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CadastrarTarefa(CadastrarTarefaDTO dados)
     {
-        var userId = User.GetUserId();
-        var tarefa = await _tarefaService.CadastrarTarefa(userId, dados);
-        return CreatedAtAction(nameof(DetalheTarefa), new {id = tarefa.Id}, tarefa);
+        var userId = User.GetUserId();        
+        var result = await _tarefaService.CadastrarTarefaAsync(userId, dados);
+        if (!result.IsSuccess) return result.ToActionResult();
+
+        return CreatedAtAction(nameof(DetalheTarefa), new {id = result.Data!.Id}, result);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> DetalheTarefa(int id)
     {
         var userId = User.GetUserId();
-        var tarefa = await _tarefaService.DetalheTarefaAsync(id, userId);
-        return Ok(tarefa);
+        var result = await _tarefaService.DetalheTarefaAsync(id, userId);
+        return result.ToActionResult();
     }
 
     [HttpPut("{id}")]
@@ -40,8 +42,8 @@ public class TarefaController : ControllerBase
     {
         if (id != dados.Id) return BadRequest("O id informada na URL é diferente do id informado no corpo da requisição.");
         var userId = User.GetUserId();
-        var tarefa = await _tarefaService.EditarTarefaAsync(userId, dados);
-        return Ok(tarefa);
+        var result = await _tarefaService.EditarTarefaAsync(userId, dados);
+        return result.ToActionResult();
     }
     
 }
