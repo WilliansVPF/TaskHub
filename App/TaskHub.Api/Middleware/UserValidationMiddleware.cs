@@ -2,7 +2,9 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TaskHub.Application.Exceptions;
+using TaskHub.Domain.Common;
 using TaskHub.Domain.Entities;
+using TaskHub.Domain.Enums;
 
 namespace TaskHub.Api.Middleware;
 
@@ -41,9 +43,11 @@ public class UserValidationMiddleware
 
                 if (!userExists)
                 {
-                    // context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    var result = Result.Failure("Usuário inexistente ou desativado.", ResultStatus.Unauthorized);
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    await context.Response.WriteAsJsonAsync(result);
                     // await context.Response.WriteAsJsonAsync(new { message = "Usuário inexistente ou desativado." });
-                    throw new UnauthorizedException("Usuário inexistente ou desativado.");
+                    return;
                 }
             }
         }
