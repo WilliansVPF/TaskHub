@@ -10,6 +10,7 @@ public class TarefaMapper
     {
         DateTime? dataInicio = (dados.InicioImediato == true) ? DateTime.Today : null;
         Status status = (dados.InicioImediato) ? Status.Execução : Status.Incompleto;
+        if (dados.IdProjeto == 0) dados.IdProjeto = null;
 
         var tarefa = new Tarefa(dados.Titulo, dados.Descricao, dataInicio, dados.DataFim, userId, dados.IdProjeto, status);
 
