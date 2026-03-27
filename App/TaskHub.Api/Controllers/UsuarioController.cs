@@ -13,10 +13,12 @@ public class UsuarioController : ControllerBase
 {
 
     private readonly UsuarioService _usuarioService;
+    private readonly TarefaService _tarefaService;
 
-    public UsuarioController(UsuarioService usuarioService)
+    public UsuarioController(UsuarioService usuarioService, TarefaService tarefaService)
     {
         _usuarioService = usuarioService;
+        _tarefaService = tarefaService;
     }
 
     [HttpPost]
@@ -57,6 +59,14 @@ public class UsuarioController : ControllerBase
     {
         var id = User.GetUserId();
         var result = await _usuarioService.HabilitaUsuarioAsync(id);
+        return result.ToActionResult();
+    }
+
+    [HttpGet("ListaTarefa")]
+    public async Task<IActionResult> ListaTarefaUsuario()
+    {
+        var id = User.GetUserId();
+        var result = await _tarefaService.ListTarefaByUserAsync(id);
         return result.ToActionResult();
     }
 

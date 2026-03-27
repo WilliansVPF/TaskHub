@@ -3,6 +3,7 @@ using NamespaceName;
 using TaskHub.Application.DTOs.Tarefa;
 using TaskHub.Application.Mappers;
 using TaskHub.Domain.Common;
+using TaskHub.Domain.Entities;
 using TaskHub.Domain.Enums;
 using TaskHub.Domain.Interfaces;
 using TaskHub.Domain.Interfaces.Repositories;
@@ -85,5 +86,12 @@ public class TarefaService
         var detalheTarefa = _tarefaMapper.TarefaToDetalheTarefaDTO(tarefa);
         
         return ResultData<DetalheTarefaDTO>.Success(detalheTarefa, ResultStatus.Ok);
+    }
+
+    public async Task<ResultData<IEnumerable<ResumoTarefaDTO>>> ListTarefaByUserAsync(string userId)
+    {
+        var tarefas = await _tarefaRepository.ListTarefaByUserAsync(userId);
+        var listaTarefas = _tarefaMapper.TarefaToResumoTarefaDTO(tarefas);
+        return ResultData<IEnumerable<ResumoTarefaDTO>>.Success(listaTarefas, ResultStatus.Ok);
     }
 }

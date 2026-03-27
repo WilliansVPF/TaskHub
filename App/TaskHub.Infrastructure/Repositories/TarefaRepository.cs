@@ -30,4 +30,10 @@ public class TarefaRepository : ITarefaRepository
     {
         return await _context.Tarefas.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id);
     }
+
+    public async Task<IEnumerable<Tarefa>> ListTarefaByUserAsync(string userId)
+    {
+        var tarefas = await _context.Tarefas.Where(t => t.IdUsuario == userId).ToListAsync();
+        return tarefas;
+    }
 }

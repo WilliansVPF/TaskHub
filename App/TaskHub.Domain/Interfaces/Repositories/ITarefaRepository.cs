@@ -9,4 +9,6 @@ public interface ITarefaRepository
     public Task<Tarefa?> GetTarefaByIdAsync(int id);
 
     public Tarefa EditarTarefa(Tarefa dados);
+
+    public Task<IEnumerable<Tarefa>> ListTarefaByUserAsync(string userId);
 }

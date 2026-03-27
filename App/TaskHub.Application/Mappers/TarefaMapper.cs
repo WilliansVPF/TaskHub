@@ -21,4 +21,15 @@ public class TarefaMapper
         var detalheTarefa = new DetalheTarefaDTO(dados.Id, dados.Titulo, dados.Descricao, dados.DataInicio, dados.DataFim, dados.Status, dados.IdUsuario, dados.IdProjeto);
         return detalheTarefa;
     }
+
+    public IEnumerable<ResumoTarefaDTO> TarefaToResumoTarefaDTO(IEnumerable<Tarefa> dados)
+    {
+        var listaTarefa = new List<ResumoTarefaDTO>();
+        foreach (var tarefa in dados)
+        {
+            var resumoTarefa = new ResumoTarefaDTO(tarefa.Id, tarefa.Titulo, tarefa.Status);
+            listaTarefa.Add(resumoTarefa);
+        }
+        return listaTarefa;
+    }
 }
