@@ -108,4 +108,22 @@ public class TarefaService
 
         return Result.Success(ResultStatus.NoContent);
     }
+
+    public async Task<ResultData<DetalheTarefaDTO>> CompletarTarefaAsync(int id, string userId)
+    {
+        var tarefa = await _tarefaRepository.GetTarefaByIdAsync(id);
+        if (tarefa is null) return ResultData<DetalheTarefaDTO>.Failure("Tarefa não encontrada", ResultStatus.NotFound);
+
+        if (tarefa.IdUsuario != userId) return ResultData<DetalheTarefaDTO>.Failure("Usuário sem premissão para acessar esse recurso", ResultStatus.Forbidden);
+
+        tarefa.Status = Status.Completa;
+
+        tarefa = _tarefaRepository.EditarTarefa(tarefa);
+        await _uOW.SaveChagesAsync();
+        _uOW.Dispose();
+
+        var detalheTarefa = _tarefaMapper.TarefaToDetalheTarefaDTO(tarefa);
+
+        return ResultData<DetalheTarefaDTO>.Success(detalheTarefa, ResultStatus.Ok);
+    }
 }

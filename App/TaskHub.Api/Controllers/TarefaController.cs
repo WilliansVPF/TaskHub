@@ -53,4 +53,12 @@ public class TarefaController : ControllerBase
         var result = await _tarefaService.DeletarTarefaAsync(id, userId);
         return result.ToActionResult();
     }
+
+    [HttpPatch("CompletaTarefa/{id}")]
+    public async Task<IActionResult> CompletarTarefa(int id)
+    {
+        var userId = User.GetUserId();
+        var result = await _tarefaService.CompletarTarefaAsync(id, userId);
+        return result.ToActionResult();
+    }
 }
