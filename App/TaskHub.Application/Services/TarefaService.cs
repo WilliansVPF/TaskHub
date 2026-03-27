@@ -94,4 +94,18 @@ public class TarefaService
         var listaTarefas = _tarefaMapper.TarefaToResumoTarefaDTO(tarefas);
         return ResultData<IEnumerable<ResumoTarefaDTO>>.Success(listaTarefas, ResultStatus.Ok);
     }
+
+    public async Task<Result> DeletarTarefaAsync(int id, string userId)
+    {
+        var tarefa = await _tarefaRepository.GetTarefaByIdAsync(id);
+        if (tarefa is null) return Result.Failure("Tarefa não encontrada", ResultStatus.NotFound);
+
+        if (tarefa.IdUsuario != userId) return Result.Failure("Usuário sem premissão para acessar esse recurso", ResultStatus.Forbidden);
+
+        _tarefaRepository.DeletarTarefa(tarefa);
+        await _uOW.SaveChagesAsync();
+        _uOW.Dispose();
+
+        return Result.Success(ResultStatus.NoContent);
+    }
 }

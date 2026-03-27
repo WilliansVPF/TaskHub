@@ -45,5 +45,12 @@ public class TarefaController : ControllerBase
         var result = await _tarefaService.EditarTarefaAsync(userId, dados);
         return result.ToActionResult();
     }
-    
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeletarTarefa(int id)
+    {
+        var userId = User.GetUserId();
+        var result = await _tarefaService.DeletarTarefaAsync(id, userId);
+        return result.ToActionResult();
+    }
 }

@@ -11,4 +11,6 @@ public interface ITarefaRepository
     public Tarefa EditarTarefa(Tarefa dados);
 
     public Task<IEnumerable<Tarefa>> ListTarefaByUserAsync(string userId);
+
+    public void DeletarTarefa(Tarefa dados);
 }

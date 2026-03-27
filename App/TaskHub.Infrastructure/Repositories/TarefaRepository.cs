@@ -36,4 +36,9 @@ public class TarefaRepository : ITarefaRepository
         var tarefas = await _context.Tarefas.Where(t => t.IdUsuario == userId).ToListAsync();
         return tarefas;
     }
+
+    public void DeletarTarefa(Tarefa dados)
+    {
+        _context.Tarefas.Remove(dados);
+    }
 }
