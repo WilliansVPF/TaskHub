@@ -22,15 +22,15 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> Login(LoginDTO dados)
     {
-        var token = await _authService.LoginAsync(dados);
-        return Ok(new { token });
+        var result = await _authService.LoginAsync(dados);
+        return result.ToActionResult();
     }
 
     [HttpPatch]
     public async Task<IActionResult> AlterarSenha(AlterarSenhaDTO dados)
     {
         var id = User.GetUserId();
-        await _authService.AlterarSenhaAsync(id, dados);
-        return Ok("Senha alterada com sucesso");
+        var result = await _authService.AlterarSenhaAsync(id, dados);
+        return result.ToActionResult();
     }
 }
