@@ -20,7 +20,7 @@ public class TarefaRepository : ITarefaRepository
         return dados;
     }
 
-    public Tarefa EditarTarefa(Tarefa dados)
+    public Tarefa AtualizarTarefa(Tarefa dados)
     {
         _context.Update(dados);
         return dados;

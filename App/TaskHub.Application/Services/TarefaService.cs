@@ -3,7 +3,6 @@ using NamespaceName;
 using TaskHub.Application.DTOs.Tarefa;
 using TaskHub.Application.Mappers;
 using TaskHub.Domain.Common;
-using TaskHub.Domain.Entities;
 using TaskHub.Domain.Enums;
 using TaskHub.Domain.Interfaces;
 using TaskHub.Domain.Interfaces.Repositories;
@@ -79,7 +78,7 @@ public class TarefaService
         tarefa.DataFim = dados.DataFim;
         tarefa.Status = dados.Status;
 
-        tarefa = _tarefaRepository.EditarTarefa(tarefa);
+        tarefa = _tarefaRepository.AtualizarTarefa(tarefa);
         await _uOW.SaveChagesAsync();
         _uOW.Dispose();
 
@@ -118,7 +117,7 @@ public class TarefaService
 
         tarefa.Status = Status.Completa;
 
-        tarefa = _tarefaRepository.EditarTarefa(tarefa);
+        tarefa = _tarefaRepository.AtualizarTarefa(tarefa);
         await _uOW.SaveChagesAsync();
         _uOW.Dispose();
 
