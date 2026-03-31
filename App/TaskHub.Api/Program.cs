@@ -8,11 +8,13 @@ using Microsoft.OpenApi;
 using NamespaceName;
 using TaskHub.Api.Middleware;
 using TaskHub.Application.DTOs.Auth;
+using TaskHub.Application.DTOs.Projeto;
 using TaskHub.Application.DTOs.Tarefa;
 using TaskHub.Application.DTOs.User;
 using TaskHub.Application.Mappers;
 using TaskHub.Application.Services;
 using TaskHub.Application.Validatos.Auth;
+using TaskHub.Application.Validatos.Projeto;
 using TaskHub.Application.Validatos.Tarefa;
 using TaskHub.Application.Validatos.User;
 using TaskHub.Domain.Entities;
@@ -87,18 +89,24 @@ builder.Services.AddScoped<IValidator<AlterarSenhaDTO>, AlterarSenhaValidator>()
 builder.Services.AddScoped<IValidator<CadastrarTarefaDTO>, CadastraTarefaValidator>();
 builder.Services.AddScoped<IValidator<EditarTarefaDTO>, EditarTarefaValidator>();
 
+//Projeto
+builder.Services.AddScoped<IValidator<CriarProjetoDTO>, CriarProjetoValidator>();
+
 //registra services
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<TarefaService>();
+builder.Services.AddScoped<ProjetoService>();
 
 //registra Mappers
 builder.Services.AddScoped<UsuarioMapper>();
 builder.Services.AddScoped<TarefaMapper>();
+builder.Services.AddScoped<ProjetoMapper>();
 
 //registra Repositories
 builder.Services.AddScoped<ITarefaRepository, TarefaRepository>();
+builder.Services.AddScoped<IProjetoRepository, ProjetoRepository>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 

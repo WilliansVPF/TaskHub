@@ -38,7 +38,7 @@ public class TarefaService
         var tarefa = _tarefaMapper.CadastraTarefaDTOToTarefa(userId, dados);
 
         tarefa = await _tarefaRepository.CadastrarTarefaAsync(tarefa);
-        var result = await _uOW.SaveChagesAsync();
+        await _uOW.SaveChagesAsync();
         _uOW.Dispose();
         
         var detalheTarefa = _tarefaMapper.TarefaToDetalheTarefaDTO(tarefa);
