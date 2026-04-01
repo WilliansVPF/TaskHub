@@ -4,7 +4,9 @@ namespace TaskHub.Domain.Interfaces.Repositories;
 
 public interface IProjetoRepository
 {
-    Task<Projeto> CriarProjeto(Projeto dados);
+    Task<Projeto> CriarProjetoAsync(Projeto dados);
     
-    Task AdicionarMembro(MembroProjeto dados);
+    Task AdicionarMembroAsync(MembroProjeto dados);
+
+    Task<Projeto?> GetProjetoByIdAsync(int id, string userId);
 }

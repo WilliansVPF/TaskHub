@@ -39,12 +39,12 @@ public class ProjetoService
 
         try
         {
-            projeto = await _projetoRepository.CriarProjeto(projeto);
+            projeto = await _projetoRepository.CriarProjetoAsync(projeto);
             await _uOW.SaveChagesAsync();
 
             var membro = new MembroProjeto(projeto.Id, projeto.IdUsuario, Privilegio.Dono);
 
-            await _projetoRepository.AdicionarMembro(membro);
+            await _projetoRepository.AdicionarMembroAsync(membro);
             
             await _uOW.CommitAsync();
             _uOW.Dispose();
@@ -60,5 +60,15 @@ public class ProjetoService
         var detalheProjeto = _projetoMapper.ToDetalheProjetoDTO(projeto);
 
         return ResultData<DetalheProjetoDTO>.Success(detalheProjeto, ResultStatus.Created);
+    }
+
+    public async Task<ResultData<DetalheProjetoDTO>> DetalheProjetoAsync(int id, string userId)
+    {
+        var projeto = await _projetoRepository.GetProjetoByIdAsync(id, userId);
+        if (projeto is null) return ResultData<DetalheProjetoDTO>.Failure("Projeto não encontrado!", ResultStatus.NotFound);
+
+        var detalheProjeto = _projetoMapper.ToDetalheProjetoDTO(projeto);
+
+        return ResultData<DetalheProjetoDTO>.Success(detalheProjeto, ResultStatus.Ok);
     }
 }

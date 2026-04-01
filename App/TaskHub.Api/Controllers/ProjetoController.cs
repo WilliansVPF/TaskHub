@@ -24,4 +24,12 @@ public class ProjetoController : ControllerBase
         if (!result.IsSuccess) return result.ToActionResult();
         return Ok(result);
     }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> DetalheProjeto(int id)
+    {
+        var userId = User.GetUserId();
+        var result = await _projetoService.DetalheProjetoAsync(id, userId);
+        return result.ToActionResult();
+    }
 }
