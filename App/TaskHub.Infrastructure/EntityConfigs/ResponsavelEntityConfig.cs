@@ -12,11 +12,11 @@ public class ResponsavelEntityConfig : IEntityTypeConfiguration<Responsavel>
 
         builder.Property(r => r.IdUsuario)
             .HasColumnName("idUsuario");
-        builder.HasKey(r => r.IdUsuario);
 
         builder.Property(r => r.IdTarefa)
             .HasColumnName("idTarefa");
-        builder.HasKey(r => r.IdTarefa);
+
+        builder.HasKey(r => new {r.IdUsuario, r.IdTarefa});
 
         builder.HasOne(r => r.Usuario)
             .WithMany(u => u.Responsaveis)

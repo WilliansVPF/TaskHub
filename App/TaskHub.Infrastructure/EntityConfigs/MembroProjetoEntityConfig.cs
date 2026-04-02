@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TaskHub.Domain.Entities;
@@ -12,11 +13,11 @@ public class MembroProjetoEntityConfig : IEntityTypeConfiguration<MembroProjeto>
 
         builder.Property(mp => mp.IdProjeto)
             .HasColumnName("idProjeto");
-        builder.HasKey(mp => mp.IdProjeto);
 
         builder.Property(mp => mp.IdUsuario)
             .HasColumnName("idUsuario");
-        builder.HasKey(mp => mp.IdUsuario);
+
+        builder.HasKey(mp => new {mp.IdProjeto, mp.IdUsuario});
 
         builder.Property(mp => mp.Privilegio)
             .HasColumnName("privilegio")
