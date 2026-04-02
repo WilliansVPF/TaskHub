@@ -22,14 +22,22 @@ public class ProjetoController : ControllerBase
         var userId = User.GetUserId();
         var result = await _projetoService.CriarProjeto(dados, userId);
         if (!result.IsSuccess) return result.ToActionResult();
-        return Ok(result);
+        return CreatedAtAction(nameof(DetalheProjeto), new {id = result.Data!.Id}, result);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id}/DetalheProjeto")]
     public async Task<IActionResult> DetalheProjeto(int id)
     {
         var userId = User.GetUserId();
         var result = await _projetoService.DetalheProjetoAsync(id, userId);
+        return result.ToActionResult();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ListarProjetos()
+    {
+        var userId = User.GetUserId();
+        var result = await _projetoService.ListarProjetosByUserAsync(userId);
         return result.ToActionResult();
     }
 }

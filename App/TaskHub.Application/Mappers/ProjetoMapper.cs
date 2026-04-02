@@ -13,6 +13,8 @@ public class ProjetoMapper
 
     public DetalheProjetoDTO ToDetalheProjetoDTO(Projeto dados)
     {
+        int i = dados.MembroProjetos.Count();
+        Console.WriteLine(i);
         var membro = dados.MembroProjetos.Select(m => new MembroProjetoDTO
         {
             Id = m.IdUsuario,
@@ -21,5 +23,16 @@ public class ProjetoMapper
         }).ToList();
         var detalheProjeto = new DetalheProjetoDTO(dados.Id, dados.Titulo, dados.Descricao, membro);
         return detalheProjeto;
+    }
+
+    public IEnumerable<ResumoProjetoDTO> ToListaResumoProjetoDTO(IEnumerable<MembroProjeto> dados)
+    {
+        var listaProjetos = dados.Select(p => new ResumoProjetoDTO
+        {
+            Id = p.Projeto.Id,
+            Titulo = p.Projeto.Titulo,
+            Descricao = p.Projeto.Descricao
+        }).ToList();
+        return listaProjetos;
     }
 }

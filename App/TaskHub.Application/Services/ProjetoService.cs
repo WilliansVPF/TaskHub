@@ -47,17 +47,16 @@ public class ProjetoService
             await _projetoRepository.AdicionarMembroAsync(membro);
             
             await _uOW.CommitAsync();
-            _uOW.Dispose();
 
         }
         catch
         {
             await _uOW.RollbackAsync();
-            _uOW.Dispose();
             throw;
         }
-
-        var detalheProjeto = _projetoMapper.ToDetalheProjetoDTO(projeto);
+        
+        projeto = await _projetoRepository.GetProjetoByIdAsync(projeto.Id, userId);
+        var detalheProjeto = _projetoMapper.ToDetalheProjetoDTO(projeto!);
 
         return ResultData<DetalheProjetoDTO>.Success(detalheProjeto, ResultStatus.Created);
     }
@@ -70,5 +69,12 @@ public class ProjetoService
         var detalheProjeto = _projetoMapper.ToDetalheProjetoDTO(projeto);
 
         return ResultData<DetalheProjetoDTO>.Success(detalheProjeto, ResultStatus.Ok);
+    }
+
+    public async Task<ResultData<IEnumerable<ResumoProjetoDTO>>> ListarProjetosByUserAsync(string userId)
+    {
+        var projetos = await _projetoRepository.ListarProjetoByUserAsync(userId);
+        var listaProjetos = _projetoMapper.ToListaResumoProjetoDTO(projetos);
+        return ResultData<IEnumerable<ResumoProjetoDTO>>.Success(listaProjetos, ResultStatus.Ok);
     }
 }

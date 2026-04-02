@@ -9,4 +9,6 @@ public interface IProjetoRepository
     Task AdicionarMembroAsync(MembroProjeto dados);
 
     Task<Projeto?> GetProjetoByIdAsync(int id, string userId);
+
+    Task<IEnumerable<MembroProjeto>> ListarProjetoByUserAsync(string userId);
 }

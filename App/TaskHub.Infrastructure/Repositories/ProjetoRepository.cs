@@ -32,4 +32,11 @@ public class ProjetoRepository : IProjetoRepository
                                                             .FirstOrDefaultAsync(p => p.Id == id && p.MembroProjetos.Any(m => m.IdUsuario == userId));
         return projeto;
     }
+
+    public async Task<IEnumerable<MembroProjeto>> ListarProjetoByUserAsync(string userId)
+    {
+        var listaProjeto = await _context.MembroProjetos.AsNoTracking().Include(m => m.Projeto).Where(m => m.IdUsuario == userId).ToListAsync();
+        // var listaProjeto = await _context.Projetos.AsNoTracking().Include(p => p.MembroProjetos).Where(m => m.IdUsuario == userId).ToListAsync();
+        return listaProjeto;
+    }
 }
