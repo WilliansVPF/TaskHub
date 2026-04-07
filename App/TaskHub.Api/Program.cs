@@ -17,6 +17,7 @@ using TaskHub.Application.Validatos.Auth;
 using TaskHub.Application.Validatos.Projeto;
 using TaskHub.Application.Validatos.Tarefa;
 using TaskHub.Application.Validatos.User;
+using TaskHub.Domain.DomainServices;
 using TaskHub.Domain.Entities;
 using TaskHub.Domain.Interfaces;
 using TaskHub.Domain.Interfaces.Repositories;
@@ -98,6 +99,9 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<TarefaService>();
 builder.Services.AddScoped<ProjetoService>();
+
+//registra Domain Services
+builder.Services.AddScoped<TarefaDomainService>();
 
 //registra Mappers
 builder.Services.AddScoped<UsuarioMapper>();

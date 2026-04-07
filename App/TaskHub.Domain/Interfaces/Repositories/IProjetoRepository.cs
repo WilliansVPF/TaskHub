@@ -11,4 +11,6 @@ public interface IProjetoRepository
     Task<Projeto?> GetProjetoByIdAsync(int id, string userId);
 
     Task<IEnumerable<MembroProjeto>> ListarProjetoByUserAsync(string userId);
+
+    Task<MembroProjeto?> GetMembroProjetoById(int? projetoId, string userId);
 }

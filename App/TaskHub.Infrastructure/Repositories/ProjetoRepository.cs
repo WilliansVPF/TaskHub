@@ -39,4 +39,10 @@ public class ProjetoRepository : IProjetoRepository
         // var listaProjeto = await _context.Projetos.AsNoTracking().Include(p => p.MembroProjetos).Where(m => m.IdUsuario == userId).ToListAsync();
         return listaProjeto;
     }
+
+    public async Task<MembroProjeto?> GetMembroProjetoById(int? projetoId, string userId)
+    {
+        var membro = await _context.MembroProjetos.AsNoTracking().FirstOrDefaultAsync(m => m.IdProjeto == projetoId && m.IdUsuario == userId);
+        return membro;
+    }
 }

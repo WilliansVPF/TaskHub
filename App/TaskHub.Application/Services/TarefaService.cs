@@ -1,8 +1,12 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using NamespaceName;
 using TaskHub.Application.DTOs.Tarefa;
 using TaskHub.Application.Mappers;
 using TaskHub.Domain.Common;
+using TaskHub.Domain.DomainServices;
+using TaskHub.Domain.Entities;
 using TaskHub.Domain.Enums;
 using TaskHub.Domain.Interfaces;
 using TaskHub.Domain.Interfaces.Repositories;
@@ -16,14 +20,20 @@ public class TarefaService
     private readonly TarefaMapper _tarefaMapper;
     private readonly IUnitOfWork _uOW;
     private readonly ITarefaRepository _tarefaRepository;
+    private readonly TarefaDomainService _tarefaDomainService;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IProjetoRepository _projetoRepository;
 
-    public TarefaService(IValidator<CadastrarTarefaDTO> cadastraTarefaValidator, TarefaMapper tarefaMapper, IUnitOfWork uOW, ITarefaRepository tarefaRepository, IValidator<EditarTarefaDTO> editarTarefaValidator)
+    public TarefaService(IValidator<CadastrarTarefaDTO> cadastraTarefaValidator, TarefaMapper tarefaMapper, IUnitOfWork uOW, ITarefaRepository tarefaRepository, IValidator<EditarTarefaDTO> editarTarefaValidator, TarefaDomainService tarefaDomainService, UserManager<ApplicationUser> userManager, IProjetoRepository projetoRepository)
     {
         _cadastraTarefaValidator = cadastraTarefaValidator;
         _tarefaMapper = tarefaMapper;
         _uOW = uOW;
         _tarefaRepository = tarefaRepository;
         _editarTarefaValidator = editarTarefaValidator;
+        _tarefaDomainService = tarefaDomainService;
+        _userManager = userManager;
+        _projetoRepository = projetoRepository;
     }
 
     public async Task<ResultData<DetalheTarefaDTO>> CadastrarTarefaAsync(string userId, CadastrarTarefaDTO dados)
@@ -99,7 +109,15 @@ public class TarefaService
         var tarefa = await _tarefaRepository.GetTarefaByIdAsync(id);
         if (tarefa is null) return Result.Failure("Tarefa não encontrada", ResultStatus.NotFound);
 
-        if (tarefa.IdUsuario != userId) return Result.Failure("Usuário sem premissão para acessar esse recurso", ResultStatus.Forbidden);
+        var usuario = await _userManager.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
+
+        MembroProjeto? membro = null;
+        
+        if (tarefa.IdProjeto is not null) membro = await _projetoRepository.GetMembroProjetoById(tarefa.IdProjeto, usuario!.Id);
+
+        // if (tarefa.IdUsuario != userId) return Result.Failure("Usuário sem premissão para acessar esse recurso", ResultStatus.Forbidden);
+        var podeDeletar = _tarefaDomainService.PodeExcluir(tarefa, usuario!, membro);
+        if (!podeDeletar.IsSuccess) return podeDeletar;
 
         _tarefaRepository.DeletarTarefa(tarefa);
         await _uOW.SaveChagesAsync();
