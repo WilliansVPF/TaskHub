@@ -20,7 +20,7 @@ public class ProjetoController : ControllerBase
     public async Task<IActionResult> CriarProjeto(CriarProjetoDTO dados)
     {
         var userId = User.GetUserId();
-        var result = await _projetoService.CriarProjeto(dados, userId);
+        var result = await _projetoService.CriarProjetoAsync(dados, userId);
         if (!result.IsSuccess) return result.ToActionResult();
         return CreatedAtAction(nameof(DetalheProjeto), new {id = result.Data!.Id}, result);
     }
@@ -39,5 +39,14 @@ public class ProjetoController : ControllerBase
         var userId = User.GetUserId();
         var result = await _projetoService.ListarProjetosByUserAsync(userId);
         return result.ToActionResult();
+    }
+
+    [HttpPost("{id}/Membro")]
+    public async Task<IActionResult> AdicionarMembro(int id, AdicionarMembroDTO dados)
+    {
+        var userId = User.GetUserId();
+        var result = await _projetoService.AdicionarMembroAsync(id, userId, dados);
+        if (!result.IsSuccess) return result.ToActionResult();
+        return Ok(result);
     }
 }

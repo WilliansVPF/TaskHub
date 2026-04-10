@@ -45,4 +45,12 @@ public class ProjetoRepository : IProjetoRepository
         var membro = await _context.MembroProjetos.AsNoTracking().FirstOrDefaultAsync(m => m.IdProjeto == projetoId && m.IdUsuario == userId);
         return membro;
     }
+
+    public async Task<Projeto?> GetProjetoComMembrosEspecificosAsync(int id, string usuarioQueAdicionaId, string usuarioASerAdicionadoId)
+    {
+        var projeto = await _context.Projetos.AsNoTracking().Include(p => p.MembroProjetos.Where(m => m.IdUsuario == usuarioQueAdicionaId || m.IdUsuario == usuarioASerAdicionadoId))
+                                            .FirstOrDefaultAsync(p => p.Id == id && p.MembroProjetos
+                                            .Any(m => m.IdUsuario == usuarioQueAdicionaId || m.IdUsuario == usuarioASerAdicionadoId));
+        return projeto;
+    }
 }

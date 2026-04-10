@@ -92,6 +92,7 @@ builder.Services.AddScoped<IValidator<EditarTarefaDTO>, EditarTarefaValidator>()
 
 //Projeto
 builder.Services.AddScoped<IValidator<CriarProjetoDTO>, CriarProjetoValidator>();
+builder.Services.AddScoped<IValidator<AdicionarMembroDTO>, AdicionarMembroValidator>();
 
 //registra services
 builder.Services.AddScoped<UsuarioService>();
@@ -102,6 +103,7 @@ builder.Services.AddScoped<ProjetoService>();
 
 //registra Domain Services
 builder.Services.AddScoped<TarefaDomainService>();
+builder.Services.AddScoped<ProjetoDomainService>();
 
 //registra Mappers
 builder.Services.AddScoped<UsuarioMapper>();

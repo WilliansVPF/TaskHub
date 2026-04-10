@@ -1,7 +1,10 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using TaskHub.Application.DTOs.Projeto;
 using TaskHub.Application.Mappers;
 using TaskHub.Domain.Common;
+using TaskHub.Domain.DomainServices;
 using TaskHub.Domain.Entities;
 using TaskHub.Domain.Enums;
 using TaskHub.Domain.Interfaces;
@@ -15,16 +18,22 @@ public class ProjetoService
     private readonly ProjetoMapper _projetoMapper;
     private readonly IProjetoRepository _projetoRepository;
     private readonly IUnitOfWork _uOW;
+    private readonly IValidator<AdicionarMembroDTO> _adicionarMembroValidator;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ProjetoDomainService _projetoDomainService;
 
-    public ProjetoService(IValidator<CriarProjetoDTO> criarProjetoValidator, ProjetoMapper projetoMapper, IProjetoRepository projetoRepository, IUnitOfWork uOW)
+    public ProjetoService(IValidator<CriarProjetoDTO> criarProjetoValidator, ProjetoMapper projetoMapper, IProjetoRepository projetoRepository, IUnitOfWork uOW, IValidator<AdicionarMembroDTO> adicionarMembroValidator, UserManager<ApplicationUser> userManager, ProjetoDomainService projetoDomainService)
     {
         _criarProjetoValidator = criarProjetoValidator;
         _projetoMapper = projetoMapper;
         _projetoRepository = projetoRepository;
         _uOW = uOW;
+        _adicionarMembroValidator = adicionarMembroValidator;
+        _userManager = userManager;
+        _projetoDomainService = projetoDomainService;
     }
 
-    public async Task<ResultData<DetalheProjetoDTO>> CriarProjeto(CriarProjetoDTO dados, string userId)
+    public async Task<ResultData<DetalheProjetoDTO>> CriarProjetoAsync(CriarProjetoDTO dados, string userId)
     {
         var validationResult = await _criarProjetoValidator.ValidateAsync(dados);
         if (!validationResult.IsValid)
@@ -76,5 +85,28 @@ public class ProjetoService
         var projetos = await _projetoRepository.ListarProjetoByUserAsync(userId);
         var listaProjetos = _projetoMapper.ToListaResumoProjetoDTO(projetos);
         return ResultData<IEnumerable<ResumoProjetoDTO>>.Success(listaProjetos, ResultStatus.Ok);
+    }
+
+    public async Task<ResultData<MembroProjeto>> AdicionarMembroAsync(int id, string userId, AdicionarMembroDTO dados)
+    {
+        var validationResult = await _adicionarMembroValidator.ValidateAsync(dados);
+        if (!validationResult.IsValid) return ResultData<MembroProjeto>.Failure("Erro de validação", ResultStatus.BadRequest);
+
+        if (!await _userManager.Users.AnyAsync(u => u.Id == dados.IdUsuario)) return ResultData<MembroProjeto>.Failure("Usuario a ser adicionado não encontrado", ResultStatus.NotFound);
+
+        var projeto = await _projetoRepository.GetProjetoComMembrosEspecificosAsync(id, userId, dados.IdUsuario);
+        if (projeto is null) return ResultData<MembroProjeto>.Failure("Projeto não encontrado", ResultStatus.NotFound);
+
+        var membroQueAdiciona = projeto.MembroProjetos.FirstOrDefault(m => m.IdUsuario == userId);
+        var membroASerAdicionado = projeto.MembroProjetos.FirstOrDefault(m => m.IdUsuario == dados.IdUsuario);
+        
+        var podeAdicionar = _projetoDomainService.PodeAdicionaMembro(membroQueAdiciona, membroASerAdicionado, dados.Privilegio);
+        if (!podeAdicionar.IsSuccess) return ResultData<MembroProjeto>.Failure(podeAdicionar.Message!, podeAdicionar.Status);
+
+        var membro = new MembroProjeto(projeto.Id, dados.IdUsuario, dados.Privilegio);
+        await _projetoRepository.AdicionarMembroAsync(membro);
+        await _uOW.SaveChagesAsync();
+
+        return ResultData<MembroProjeto>.Success(membro,ResultStatus.Created);
     }
 }

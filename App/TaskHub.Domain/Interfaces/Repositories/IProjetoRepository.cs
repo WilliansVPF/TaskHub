@@ -13,4 +13,6 @@ public interface IProjetoRepository
     Task<IEnumerable<MembroProjeto>> ListarProjetoByUserAsync(string userId);
 
     Task<MembroProjeto?> GetMembroProjetoById(int? projetoId, string userId);
+
+    Task<Projeto?> GetProjetoComMembrosEspecificosAsync(int id, string usuarioQueAdicionaId, string usuarioASerAdicionadoId);
 }
