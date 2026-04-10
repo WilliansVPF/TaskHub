@@ -107,6 +107,6 @@ public class ProjetoService
         await _projetoRepository.AdicionarMembroAsync(membro);
         await _uOW.SaveChagesAsync();
 
-        return ResultData<MembroProjeto>.Success(membro,ResultStatus.Created);
+        return ResultData<MembroProjeto>.Success(membro,ResultStatus.Ok);
     }
 }

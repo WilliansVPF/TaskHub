@@ -46,7 +46,6 @@ public class ProjetoController : ControllerBase
     {
         var userId = User.GetUserId();
         var result = await _projetoService.AdicionarMembroAsync(id, userId, dados);
-        if (!result.IsSuccess) return result.ToActionResult();
-        return Ok(result);
+        return result.ToActionResult();
     }
 }
