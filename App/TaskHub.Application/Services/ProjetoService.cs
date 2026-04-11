@@ -90,8 +90,11 @@ public class ProjetoService
     public async Task<ResultData<MembroProjeto>> AdicionarMembroAsync(int id, string userId, AdicionarMembroDTO dados)
     {
         var validationResult = await _adicionarMembroValidator.ValidateAsync(dados);
-        if (!validationResult.IsValid) return ResultData<MembroProjeto>.Failure("Erro de validação", ResultStatus.BadRequest);
-
+        if (!validationResult.IsValid)
+        {
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
+            return ResultData<MembroProjeto>.Failure("Erro de validação", ResultStatus.BadRequest, errors);
+        } 
         if (!await _userManager.Users.AnyAsync(u => u.Id == dados.IdUsuario)) return ResultData<MembroProjeto>.Failure("Usuario a ser adicionado não encontrado", ResultStatus.NotFound);
 
         var projeto = await _projetoRepository.GetProjetoComMembrosEspecificosAsync(id, userId, dados.IdUsuario);

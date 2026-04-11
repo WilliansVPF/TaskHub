@@ -11,6 +11,7 @@ public class AdicionarMembroValidator : AbstractValidator<AdicionarMembroDTO>
             .NotEmpty().WithMessage("O 'id' do usuário precisa ser informado.");
 
         RuleFor(m => m.Privilegio)
-            .NotEmpty().WithMessage("O 'privilégio' do usuário precisa ser informado.");
+            .NotEmpty().WithMessage("O 'privilégio' do usuário precisa ser informado.")
+            .IsInEnum().WithMessage("Privilégio inválido.");
     }
 }
