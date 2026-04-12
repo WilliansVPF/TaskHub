@@ -17,4 +17,6 @@ public interface IProjetoRepository
     Task<MembroProjeto?> GetMembroProjetoById(int? projetoId, string userId);
 
     Task<Projeto?> GetProjetoComMembrosEspecificosAsync(int id, string usuarioQueAdicionaId, string usuarioASerAdicionadoId);
+
+    Task<bool> VerificaMembroAsync(int id, string userId);
 }

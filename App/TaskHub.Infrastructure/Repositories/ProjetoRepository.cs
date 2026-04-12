@@ -59,4 +59,10 @@ public class ProjetoRepository : IProjetoRepository
                                             .Any(m => m.IdUsuario == usuarioQueAdicionaId || m.IdUsuario == usuarioASerAdicionadoId));
         return projeto;
     }
+
+    public async Task<bool> VerificaMembroAsync(int id, string userId)
+    {
+        var ehMembro = await _context.MembroProjetos.AsNoTracking().AnyAsync(m => m.IdProjeto == id && m.IdUsuario == userId);
+        return ehMembro;
+    }
 }

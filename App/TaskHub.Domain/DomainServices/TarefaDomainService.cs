@@ -21,4 +21,18 @@ public class TarefaDomainService
 
         return Result.Success(ResultStatus.NoContent);
     }
+
+    public Result PodeVer(Tarefa tarefa, bool ehMembro, string userId)
+    {
+        if (tarefa.IdProjeto is null)
+        {
+            if (tarefa.IdUsuario != userId) return Result.Failure("Tarefa não econtrada", ResultStatus.NotFound);
+        }
+        else
+        {
+            if (!ehMembro) return Result.Failure("Tarefa não encontrada", ResultStatus.NotFound);
+        }
+
+        return Result.Success();
+    }
 }

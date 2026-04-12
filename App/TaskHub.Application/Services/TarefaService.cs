@@ -67,7 +67,11 @@ public class TarefaService
         var tarefa = await _tarefaRepository.GetTarefaByIdAsync(id);
         if (tarefa is null) return ResultData<DetalheTarefaDTO>.Failure("Tarefa não encontrada", ResultStatus.NotFound);
 
-        if (tarefa.IdUsuario != userId) return ResultData<DetalheTarefaDTO>.Failure("Usuário sem premissão para acessar esse recurso", ResultStatus.Forbidden);
+        bool ehMembro = false;
+        if (tarefa.IdProjeto.HasValue) ehMembro = await _projetoRepository.VerificaMembroAsync(tarefa.IdProjeto.Value, userId);
+
+        var domainResult = _tarefaDomainService.PodeVer(tarefa, ehMembro, userId);
+        if (!domainResult.IsSuccess) return ResultData<DetalheTarefaDTO>.Failure(domainResult.Message!, domainResult.Status);
 
         var detalheTarefa = _tarefaMapper.TarefaToDetalheTarefaDTO(tarefa);
 
