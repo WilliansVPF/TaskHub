@@ -45,6 +45,12 @@ public class TarefaService
             return ResultData<DetalheTarefaDTO>.Failure("Erro de validação", ResultStatus.BadRequest, errors);
         }
 
+        if (dados.IdProjeto != null && dados.IdProjeto != 0)
+        {
+            var projeto = await _projetoRepository.ProjetoExiste((int)dados.IdProjeto, userId);
+            if (!projeto) return ResultData<DetalheTarefaDTO>.Failure("Projeto não encontrado!", ResultStatus.NotFound);
+        }
+
         var tarefa = _tarefaMapper.CadastraTarefaDTOToTarefa(userId, dados);
 
         tarefa = await _tarefaRepository.CadastrarTarefaAsync(tarefa);

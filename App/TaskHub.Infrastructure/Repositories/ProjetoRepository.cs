@@ -27,9 +27,15 @@ public class ProjetoRepository : IProjetoRepository
 
     public async Task<Projeto?> GetProjetoByIdAsync(int id, string userId)
     {
-        var projeto = await _context.Projetos.AsNoTracking().Include(p => p.MembroProjetos) // Opcional: só se você for usar a lista de membros no front
+        var projeto = await _context.Projetos.AsNoTracking().Include(p => p.MembroProjetos.Where(m => m.IdUsuario == userId)) // Opcional: só se você for usar a lista de membros no front
                                                             .ThenInclude(m => m.Usuario)
                                                             .FirstOrDefaultAsync(p => p.Id == id && p.MembroProjetos.Any(m => m.IdUsuario == userId));
+        return projeto;
+    }
+
+    public async Task<bool> ProjetoExiste(int id, string userId)
+    {
+        var projeto = await _context.Projetos.AsNoTracking().AnyAsync(p => p.Id == id && p.MembroProjetos.Any(m => m.IdUsuario == userId));
         return projeto;
     }
 
