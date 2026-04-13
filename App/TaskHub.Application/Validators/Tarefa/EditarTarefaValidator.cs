@@ -1,5 +1,5 @@
 using FluentValidation;
-using NamespaceName;
+using TaskHub.Application.DTOs.Tarefa;
 
 namespace TaskHub.Application.Validatos.Tarefa;
 

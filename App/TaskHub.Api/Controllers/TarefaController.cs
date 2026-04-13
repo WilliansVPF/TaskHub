@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NamespaceName;
 using TaskHub.Api.Extensions;
 using TaskHub.Application.DTOs.Tarefa;
 using TaskHub.Application.Services;

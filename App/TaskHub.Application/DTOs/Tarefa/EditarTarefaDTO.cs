@@ -1,6 +1,6 @@
 using TaskHub.Domain.Enums;
 
-namespace NamespaceName;
+namespace TaskHub.Application.DTOs.Tarefa;
 
 public class EditarTarefaDTO
 {

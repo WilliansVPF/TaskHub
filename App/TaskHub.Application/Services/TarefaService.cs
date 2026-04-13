@@ -1,7 +1,6 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using NamespaceName;
 using TaskHub.Application.DTOs.Tarefa;
 using TaskHub.Application.Mappers;
 using TaskHub.Domain.Common;

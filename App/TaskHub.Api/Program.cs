@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
-using NamespaceName;
 using TaskHub.Api.Middleware;
 using TaskHub.Application.DTOs.Auth;
 using TaskHub.Application.DTOs.Projeto;
