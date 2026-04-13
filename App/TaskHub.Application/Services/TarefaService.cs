@@ -16,6 +16,7 @@ public class TarefaService
 {
     private readonly IValidator<CadastrarTarefaDTO> _cadastraTarefaValidator;
     private readonly IValidator<EditarTarefaDTO> _editarTarefaValidator;
+    private readonly IValidator<AdicionarResponsavelDTO> _adicionarResponsavelValidator;
     private readonly TarefaMapper _tarefaMapper;
     private readonly IUnitOfWork _uOW;
     private readonly ITarefaRepository _tarefaRepository;
@@ -23,7 +24,7 @@ public class TarefaService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IProjetoRepository _projetoRepository;
 
-    public TarefaService(IValidator<CadastrarTarefaDTO> cadastraTarefaValidator, TarefaMapper tarefaMapper, IUnitOfWork uOW, ITarefaRepository tarefaRepository, IValidator<EditarTarefaDTO> editarTarefaValidator, TarefaDomainService tarefaDomainService, UserManager<ApplicationUser> userManager, IProjetoRepository projetoRepository)
+    public TarefaService(IValidator<CadastrarTarefaDTO> cadastraTarefaValidator, TarefaMapper tarefaMapper, IUnitOfWork uOW, ITarefaRepository tarefaRepository, IValidator<EditarTarefaDTO> editarTarefaValidator, TarefaDomainService tarefaDomainService, UserManager<ApplicationUser> userManager, IProjetoRepository projetoRepository, IValidator<AdicionarResponsavelDTO> adicionarResponsavelValidator)
     {
         _cadastraTarefaValidator = cadastraTarefaValidator;
         _tarefaMapper = tarefaMapper;
@@ -33,6 +34,7 @@ public class TarefaService
         _tarefaDomainService = tarefaDomainService;
         _userManager = userManager;
         _projetoRepository = projetoRepository;
+        _adicionarResponsavelValidator = adicionarResponsavelValidator;
     }
 
     public async Task<ResultData<DetalheTarefaDTO>> CadastrarTarefaAsync(string userId, CadastrarTarefaDTO dados)
@@ -158,5 +160,39 @@ public class TarefaService
         var detalheTarefa = _tarefaMapper.TarefaToDetalheTarefaDTO(tarefa);
 
         return ResultData<DetalheTarefaDTO>.Success(detalheTarefa, ResultStatus.Ok);
+    }
+
+    public async Task<Result> AdicionaResponsavelAsync(int id, string userId, AdicionarResponsavelDTO dados)
+    {
+        var validationResult = await _adicionarResponsavelValidator.ValidateAsync(dados);
+        if (!validationResult.IsValid)
+        {
+            var erros = validationResult.Errors.Select(e => e.ErrorMessage);
+            return Result.Failure("Erro de validação", ResultStatus.BadRequest, erros);
+        } 
+        
+        var tarefa = await _tarefaRepository.GetTarefaByIdAsync(id);
+        if (tarefa is null) return Result.Failure("Tarefa não encontrada", ResultStatus.NotFound);
+
+        var ehMembro = false;
+        var responsavelEhMembro = false;
+
+        if (tarefa.IdProjeto.HasValue)
+        {
+          ehMembro = await _projetoRepository.VerificaMembroAsync(tarefa.IdProjeto.Value, userId);  
+          responsavelEhMembro = await _projetoRepository.VerificaMembroAsync(tarefa.IdProjeto.Value, dados.ResponsavelId);  
+        }
+
+        var ehResponsavel = await _tarefaRepository.VerificaResponsavel(tarefa.Id, dados.ResponsavelId);  
+
+        var domainResult = _tarefaDomainService.PodeAdicionarResponsavel(tarefa, userId, ehMembro, responsavelEhMembro, ehResponsavel);
+        if (!domainResult.IsSuccess) return domainResult;
+
+        Responsavel responsavel = new Responsavel(dados.ResponsavelId, tarefa.Id);
+
+        await _tarefaRepository.AdicionarResponsavelAsync(responsavel);
+        await _uOW.SaveChagesAsync();     
+
+        return Result.Success(ResultStatus.NoContent);
     }
 }

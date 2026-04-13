@@ -53,11 +53,19 @@ public class TarefaController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpPatch("CompletaTarefa/{id}")]
+    [HttpPatch("CompletarTarefa/{id}")]
     public async Task<IActionResult> CompletarTarefa(int id)
     {
         var userId = User.GetUserId();
         var result = await _tarefaService.CompletarTarefaAsync(id, userId);
+        return result.ToActionResult();
+    }
+
+    [HttpPost("{id}/Responsavel")]
+    public async Task<IActionResult> AdicionarResponsavel(int id, AdicionarResponsavelDTO dados)
+    {
+        var userId = User.GetUserId();
+        var result = await _tarefaService.AdicionaResponsavelAsync(id, userId, dados);
         return result.ToActionResult();
     }
 }

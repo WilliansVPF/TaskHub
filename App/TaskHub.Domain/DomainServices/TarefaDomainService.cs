@@ -52,4 +52,23 @@ public class TarefaDomainService
 
         return Result.Success();
     }
+
+    public Result PodeAdicionarResponsavel(Tarefa tarefa, string userId, bool userEhMembro, bool responsavelEhMembro, bool ehResponsavel)
+    {
+        if (tarefa.IdProjeto is null)
+        {
+            if (tarefa.IdUsuario != userId) return Result.Failure("Tarefa não encontrada", ResultStatus.NotFound);
+            return Result.Failure("Tarefa avulsa não precisa de responsável", ResultStatus.Conflict);
+        }
+        else
+        {
+            if (!userEhMembro) return Result.Failure("Tarefa não encontrada", ResultStatus.NotFound);
+
+            if (!responsavelEhMembro) return Result.Failure("Usuário responsável não é membro do projeto", ResultStatus.Conflict);
+
+            if (ehResponsavel) return Result.Failure("Usuário já é responsável por essa tarefa", ResultStatus.Conflict);
+        }
+
+        return Result.Success(ResultStatus.NoContent);
+    }
 }

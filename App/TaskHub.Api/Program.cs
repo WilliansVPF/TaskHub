@@ -88,6 +88,7 @@ builder.Services.AddScoped<IValidator<AlterarSenhaDTO>, AlterarSenhaValidator>()
 //Tarefa
 builder.Services.AddScoped<IValidator<CadastrarTarefaDTO>, CadastraTarefaValidator>();
 builder.Services.AddScoped<IValidator<EditarTarefaDTO>, EditarTarefaValidator>();
+builder.Services.AddScoped<IValidator<AdicionarResponsavelDTO>, AdicionarResponsavelValidator>();
 
 //Projeto
 builder.Services.AddScoped<IValidator<CriarProjetoDTO>, CriarProjetoValidator>();

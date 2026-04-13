@@ -41,4 +41,15 @@ public class TarefaRepository : ITarefaRepository
     {
         _context.Tarefas.Remove(dados);
     }
+
+    public async Task AdicionarResponsavelAsync(Responsavel dados)
+    {
+        await _context.AddAsync(dados);
+    }
+
+    public async Task<bool> VerificaResponsavel(int id, string responsavelId)
+    {
+        var ehResponsavel= await _context.Responsaveis.AnyAsync(r => r.IdTarefa == id && r.IdUsuario == responsavelId);
+        return ehResponsavel;
+    }
 }

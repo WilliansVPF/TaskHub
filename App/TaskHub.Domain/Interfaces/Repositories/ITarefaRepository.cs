@@ -4,13 +4,17 @@ namespace TaskHub.Domain.Interfaces.Repositories;
 
 public interface ITarefaRepository
 {
-    public Task<Tarefa> CadastrarTarefaAsync(Tarefa dados);
+    Task<Tarefa> CadastrarTarefaAsync(Tarefa dados);
 
-    public Task<Tarefa?> GetTarefaByIdAsync(int id);
+    Task<Tarefa?> GetTarefaByIdAsync(int id);
 
-    public Tarefa AtualizarTarefa(Tarefa dados);
+    Tarefa AtualizarTarefa(Tarefa dados);
 
-    public Task<IEnumerable<Tarefa>> ListTarefaByUserAsync(string userId);
+    Task<IEnumerable<Tarefa>> ListTarefaByUserAsync(string userId);
 
-    public void DeletarTarefa(Tarefa dados);
+    void DeletarTarefa(Tarefa dados);
+
+    Task AdicionarResponsavelAsync(Responsavel dados);
+
+    Task<bool> VerificaResponsavel(int id, string responsavelId);
 }
