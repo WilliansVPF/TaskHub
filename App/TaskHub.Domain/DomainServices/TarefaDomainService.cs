@@ -35,4 +35,21 @@ public class TarefaDomainService
 
         return Result.Success();
     }
+
+    public Result PodeEditar(Tarefa tarefa, MembroProjeto? membro, string userId)
+    {
+        if (tarefa.IdProjeto is null)
+        {
+            if (tarefa.IdUsuario != userId) return Result.Failure("Tarefa não econtrada", ResultStatus.NotFound);
+        }
+        else
+        {
+            if (membro is null) return Result.Failure("Tarefa não econtrada", ResultStatus.NotFound);
+
+            if (membro.Privilegio != Privilegio.Dono && membro.Privilegio != Privilegio.Admin && tarefa.IdUsuario != userId) 
+                return Result.Failure("Usuário não tem autorização para editar essa tarefa", ResultStatus.Forbidden); 
+        }
+
+        return Result.Success();
+    }
 }
