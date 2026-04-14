@@ -35,13 +35,13 @@ public class ProjetoController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpGet]
-    public async Task<IActionResult> ListarProjetos()
-    {
-        var userId = User.GetUserId();
-        var result = await _projetoService.ListarProjetosByUserAsync(userId);
-        return result.ToActionResult();
-    }
+    // [HttpGet]
+    // public async Task<IActionResult> ListarProjetos()
+    // {
+    //     var userId = User.GetUserId();
+    //     var result = await _projetoService.ListarProjetosByUserAsync(userId);
+    //     return result.ToActionResult();
+    // }
 
     [HttpPost("{id}/Membro")]
     public async Task<IActionResult> AdicionarMembro(int id, AdicionarMembroDTO dados)

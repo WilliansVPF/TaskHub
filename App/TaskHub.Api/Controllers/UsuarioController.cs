@@ -14,11 +14,13 @@ public class UsuarioController : ControllerBase
 
     private readonly UsuarioService _usuarioService;
     private readonly TarefaService _tarefaService;
+    private readonly ProjetoService _projetoService;
 
-    public UsuarioController(UsuarioService usuarioService, TarefaService tarefaService)
+    public UsuarioController(UsuarioService usuarioService, TarefaService tarefaService, ProjetoService projetoService)
     {
         _usuarioService = usuarioService;
         _tarefaService = tarefaService;
+        _projetoService = projetoService;
     }
 
     [HttpPost]
@@ -62,11 +64,19 @@ public class UsuarioController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpGet("ListaTarefa")]
+    [HttpGet("ListaTarefas")]
     public async Task<IActionResult> ListaTarefaUsuario()
     {
         var id = User.GetUserId();
         var result = await _tarefaService.ListTarefaByUserAsync(id);
+        return result.ToActionResult();
+    }
+
+    [HttpGet("ListaProjetos")]
+    public async Task<IActionResult> ListarProjetos()
+    {
+        var userId = User.GetUserId();
+        var result = await _projetoService.ListarProjetosByUserAsync(userId);
         return result.ToActionResult();
     }
 
