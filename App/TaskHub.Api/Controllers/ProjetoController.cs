@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskHub.Api.Extensions;
 using TaskHub.Application.DTOs.Projeto;
@@ -7,6 +8,7 @@ namespace TaskHub.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ProjetoController : ControllerBase
 {
     private readonly ProjetoService _projetoService;
