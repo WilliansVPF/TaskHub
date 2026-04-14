@@ -1,4 +1,3 @@
-using System.Net.Mail;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TaskHub.Domain.Entities;
@@ -17,13 +16,18 @@ public class MembroProjetoEntityConfig : IEntityTypeConfiguration<MembroProjeto>
         builder.Property(mp => mp.IdUsuario)
             .HasColumnName("idUsuario");
 
-        builder.HasKey(mp => new {mp.IdProjeto, mp.IdUsuario});
+        builder.HasKey(mp => new { mp.IdProjeto, mp.IdUsuario });
 
         builder.Property(mp => mp.Privilegio)
             .HasColumnName("privilegio")
             .IsRequired();
 
         builder.ToTable(mp => mp.HasCheckConstraint("CHK_MembroProjeto_Privilegio", "\"privilegio\" IN (1, 2, 3)"));
+
+        builder.HasIndex(mp => mp.IdProjeto)
+            .HasDatabaseName("UX_MembroProjeto_Dono")
+            .IsUnique()
+            .HasFilter("\"privilegio\" = 1");
 
         builder.HasOne(mp => mp.Projeto)
             .WithMany(p => p.MembroProjetos)
