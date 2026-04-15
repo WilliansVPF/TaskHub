@@ -12,8 +12,9 @@ public class DetalheTarefaDTO
     public Status Status { get; set; }
     public string IdUsuario { get; set; }
     public int? IdProjeto { get; set; }
+    public IEnumerable<ResponsavelTarefaDTO> Responsaveis { get; set; }
 
-    public DetalheTarefaDTO(int id, string titulo, string descricao, DateTime? dataInicio, DateTime? dataFim, Status status, string idUsuario, int? idProjeto)
+    public DetalheTarefaDTO(int id, string titulo, string descricao, DateTime? dataInicio, DateTime? dataFim, Status status, string idUsuario, int? idProjeto, IEnumerable<ResponsavelTarefaDTO> responsaveis)
     {
         Id = id;
         Titulo = titulo;
@@ -23,6 +24,7 @@ public class DetalheTarefaDTO
         Status = status;
         IdUsuario = idUsuario;
         IdProjeto = idProjeto;
+        Responsaveis = responsaveis;
     }
 
 }

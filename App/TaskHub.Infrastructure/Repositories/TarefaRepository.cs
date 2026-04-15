@@ -53,4 +53,13 @@ public class TarefaRepository : ITarefaRepository
         var ehResponsavel= await _context.Responsaveis.AnyAsync(r => r.IdTarefa == id && r.IdUsuario == responsavelId);
         return ehResponsavel;
     }
+
+    public async Task<Tarefa?> DetalheTarefaByIdAsync(int id)
+    {
+        var tarefas =  await _context.Tarefas.AsNoTracking().Include(t => t.Responsaveis.Where(r => r.IdTarefa == id))
+                                                            .ThenInclude(r => r.Usuario)
+                                                            .FirstOrDefaultAsync(t => t.Id == id);
+                                                            
+        return tarefas;
+    }
 }

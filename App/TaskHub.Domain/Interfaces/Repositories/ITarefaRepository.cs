@@ -17,4 +17,6 @@ public interface ITarefaRepository
     Task AdicionarResponsavelAsync(Responsavel dados);
 
     Task<bool> VerificaResponsavel(int id, string responsavelId);
+
+    Task<Tarefa?> DetalheTarefaByIdAsync(int id);
 }

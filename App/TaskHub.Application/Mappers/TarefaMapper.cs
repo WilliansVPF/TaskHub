@@ -19,7 +19,8 @@ public class TarefaMapper
 
     public DetalheTarefaDTO TarefaToDetalheTarefaDTO(Tarefa dados)
     {
-        var detalheTarefa = new DetalheTarefaDTO(dados.Id, dados.Titulo, dados.Descricao, dados.DataInicio, dados.DataFim, dados.Status, dados.IdUsuario, dados.IdProjeto);
+        var responsaveis = dados.Responsaveis.Select(r => new ResponsavelTarefaDTO(r.IdUsuario, r.Usuario.Nome));
+        var detalheTarefa = new DetalheTarefaDTO(dados.Id, dados.Titulo, dados.Descricao, dados.DataInicio, dados.DataFim, dados.Status, dados.IdUsuario, dados.IdProjeto, responsaveis);
         return detalheTarefa;
     }
 

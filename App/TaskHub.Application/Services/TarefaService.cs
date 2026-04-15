@@ -65,7 +65,7 @@ public class TarefaService
 
     public async Task<ResultData<DetalheTarefaDTO>> DetalheTarefaAsync(int id, string userId)
     {
-        var tarefa = await _tarefaRepository.GetTarefaByIdAsync(id);
+        var tarefa = await _tarefaRepository.DetalheTarefaByIdAsync(id);
         if (tarefa is null) return ResultData<DetalheTarefaDTO>.Failure("Tarefa não encontrada", ResultStatus.NotFound);
 
         bool ehMembro = false;
