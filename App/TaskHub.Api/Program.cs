@@ -1,27 +1,13 @@
 using System.Text;
-using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using TaskHub.Api.Middleware;
-using TaskHub.Application.DTOs.Auth;
-using TaskHub.Application.DTOs.Projeto;
-using TaskHub.Application.DTOs.Tarefa;
-using TaskHub.Application.DTOs.User;
-using TaskHub.Application.Mappers;
-using TaskHub.Application.Services;
-using TaskHub.Application.Validatos.Auth;
-using TaskHub.Application.Validatos.Projeto;
-using TaskHub.Application.Validatos.Tarefa;
-using TaskHub.Application.Validatos.User;
-using TaskHub.Domain.DomainServices;
+using TaskHub.Api.Configs;
 using TaskHub.Domain.Entities;
-using TaskHub.Domain.Interfaces;
-using TaskHub.Domain.Interfaces.Repositories;
 using TaskHub.Infrastructure.Contexts;
-using TaskHub.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,74 +33,29 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
-builder.Services.AddDbContext<TaskHubContext>(options => 
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    ));
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<TaskHubContext>()
-    .AddDefaultTokenProviders();
+builder.Services.RegisterDatabase(builder.Configuration);
+
+builder.Services.RegisterIdentity();
 
 var jwtKey = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Secret"]!);
 
-builder.Services.AddAuthentication(x =>
-{
-    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(x =>
-{
-    x.RequireHttpsMetadata = false;
-    x.SaveToken = true;
-    x.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(jwtKey),
-        ValidateIssuer = false,
-        ValidateAudience = false,
-        ValidateLifetime = true,
-    };
-});
+builder.Services.RegisterAuth(builder.Configuration);
 
 //registra validators
-//Usuario
-builder.Services.AddScoped<IValidator<RegistrarUsuarioDTO>, RegistrarUsuarioValidator>();
-builder.Services.AddScoped<IValidator<EditarUsuarioDTO>, EditarUsuarioValidator>();
-
-//Auth
-builder.Services.AddScoped<IValidator<LoginDTO>, LoginValidator>();
-builder.Services.AddScoped<IValidator<AlterarSenhaDTO>, AlterarSenhaValidator>();
-
-//Tarefa
-builder.Services.AddScoped<IValidator<CadastrarTarefaDTO>, CadastraTarefaValidator>();
-builder.Services.AddScoped<IValidator<EditarTarefaDTO>, EditarTarefaValidator>();
-builder.Services.AddScoped<IValidator<AdicionarResponsavelDTO>, AdicionarResponsavelValidator>();
-
-//Projeto
-builder.Services.AddScoped<IValidator<CriarProjetoDTO>, CriarProjetoValidator>();
-builder.Services.AddScoped<IValidator<AdicionarMembroDTO>, AdicionarMembroValidator>();
+builder.Services.RegisterValidators();
 
 //registra services
-builder.Services.AddScoped<UsuarioService>();
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<TokenService>();
-builder.Services.AddScoped<TarefaService>();
-builder.Services.AddScoped<ProjetoService>();
+builder.Services.RegisterServices();
 
 //registra Domain Services
-builder.Services.AddScoped<TarefaDomainService>();
-builder.Services.AddScoped<ProjetoDomainService>();
+builder.Services.RegisterDomainServices();
 
 //registra Mappers
-builder.Services.AddScoped<UsuarioMapper>();
-builder.Services.AddScoped<TarefaMapper>();
-builder.Services.AddScoped<ProjetoMapper>();
+builder.Services.RegisterMappers();
 
 //registra Repositories
-builder.Services.AddScoped<ITarefaRepository, TarefaRepository>();
-builder.Services.AddScoped<IProjetoRepository, ProjetoRepository>();
+builder.Services.RegisterRepositories();
 
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
