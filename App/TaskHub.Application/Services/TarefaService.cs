@@ -133,7 +133,6 @@ public class TarefaService
         
         if (tarefa.IdProjeto is not null) membro = await _projetoRepository.GetMembroProjetoById(tarefa.IdProjeto, usuario!.Id);
 
-        // if (tarefa.IdUsuario != userId) return Result.Failure("Usuário sem premissão para acessar esse recurso", ResultStatus.Forbidden);
         var podeDeletar = _tarefaDomainService.PodeExcluir(tarefa, usuario!, membro);
         if (!podeDeletar.IsSuccess) return podeDeletar;
 

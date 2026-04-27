@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using TaskHub.Application.DTOs.User;
 using TaskHub.Application.Mappers;
 using TaskHub.Domain.Common;
+using TaskHub.Domain.DomainServices;
 using TaskHub.Domain.Entities;
 using TaskHub.Domain.Enums;
 
@@ -15,13 +16,15 @@ public class UsuarioService
     private readonly IValidator<EditarUsuarioDTO> _editarUsuarioValidator;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly UsuarioMapper _usuarioMapper;
+    private readonly UserDomainService _userDomainService;
 
-    public UsuarioService(IValidator<RegistrarUsuarioDTO> registraUsuarioValidator, UserManager<ApplicationUser> userManager, UsuarioMapper usuarioMapper, IValidator<EditarUsuarioDTO> editarUsuarioValidator)
+    public UsuarioService(IValidator<RegistrarUsuarioDTO> registraUsuarioValidator, UserManager<ApplicationUser> userManager, UsuarioMapper usuarioMapper, IValidator<EditarUsuarioDTO> editarUsuarioValidator, UserDomainService userDomainService)
     {
         _registraUsuarioValidator = registraUsuarioValidator;
         _userManager = userManager;
         _usuarioMapper = usuarioMapper;
         _editarUsuarioValidator = editarUsuarioValidator;
+        _userDomainService = userDomainService;
     }
 
     public async Task<ResultData<DetalheUsuarioDTO>> RegistrarUsuarioAsync(RegistrarUsuarioDTO dados)
@@ -34,10 +37,10 @@ public class UsuarioService
             return ResultData<DetalheUsuarioDTO>.Failure("Erro de validação", ResultStatus.BadRequest, errors);
         }
 
-        var user = await _userManager.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == dados.Email);
-        if (user is not null) return ResultData<DetalheUsuarioDTO>.Failure("E-mail já cadastrado na base de dados", ResultStatus.Conflict);
+        var domainResult = await _userDomainService.VerificaEmail(dados.Email);
+        if (!domainResult.IsSuccess) return ResultData<DetalheUsuarioDTO>.Failure(domainResult.Message!, domainResult.Status);
 
-        user = _usuarioMapper.RegistrarUsuarioDTOToApplicationUser(dados);
+        var user = _usuarioMapper.RegistrarUsuarioDTOToApplicationUser(dados);
 
         var identityResult = await _userManager.CreateAsync(user, dados.Senha);
         if (!identityResult.Succeeded)
@@ -71,8 +74,8 @@ public class UsuarioService
             return ResultData<DetalheUsuarioDTO>.Failure("Erro de validação", ResultStatus.BadRequest, errors);
         }
 
-        var userExists = await _userManager.Users.AsNoTracking().AnyAsync(u => u.Email == dados.Email && u.Id != id);
-        if (userExists) return ResultData<DetalheUsuarioDTO>.Failure("E-mail já cadastrado na base de dados", ResultStatus.Conflict);
+        var domainResult = await _userDomainService.VerificaEmail(dados.Email, id);
+        if (!domainResult.IsSuccess) return ResultData<DetalheUsuarioDTO>.Failure(domainResult.Message!, domainResult.Status);
 
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user is null) return ResultData<DetalheUsuarioDTO>.Failure("Usuário não encontrado na base de dados", ResultStatus.NotFound);
@@ -115,7 +118,6 @@ public class UsuarioService
     {
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
         if (user is null) return ResultData<DetalheUsuarioDTO>.Failure("Usuário não encontrado na base de dados", ResultStatus.NotFound);
-
 
         user.Ativo = true;
 

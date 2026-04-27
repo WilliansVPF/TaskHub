@@ -8,5 +8,6 @@ public static class DomainServicesConfig
     {
         services.AddScoped<TarefaDomainService>();
         services.AddScoped<ProjetoDomainService>();
+        services.AddScoped<UserDomainService>();
     }
 }
